@@ -1,4 +1,4 @@
-package healthHandler
+package health
 
 import (
 	"context"

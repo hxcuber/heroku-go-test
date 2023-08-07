@@ -4,9 +4,8 @@ import (
 	"context"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/hxcuber/friends-management/api/internal/api/rest/health"
 	"net/http"
-
-	"github.com/hxcuber/friends-management/api/internal/api/rest/healthHandler"
 )
 
 // Router defines the routes & handlers of the app
@@ -14,7 +13,7 @@ type Router struct {
 	ctx                  context.Context
 	corsOrigins          []string
 	isGQLIntrospectionOn bool
-	healthRESTHandler    healthHandler.Handler
+	healthRESTHandler    health.Handler
 }
 
 // Handler returns the Handler for use by the server

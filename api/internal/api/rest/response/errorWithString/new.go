@@ -1,4 +1,4 @@
-package error
+package errorWithString
 
 import (
 	"github.com/hxcuber/friends-management/api/internal/api/rest/response/basicSuccess"

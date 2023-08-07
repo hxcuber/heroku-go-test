@@ -1,4 +1,4 @@
-package systemController
+package system
 
 import (
 	"context"

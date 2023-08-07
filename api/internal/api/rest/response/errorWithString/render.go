@@ -1,4 +1,4 @@
-package error
+package errorWithString
 
 import "net/http"
 

@@ -1,4 +1,4 @@
-package systemRepository
+package system
 
 import (
 	"context"

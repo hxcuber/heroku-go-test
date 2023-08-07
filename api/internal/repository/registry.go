@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/hxcuber/friends-management/api/internal/repository/systemRepository"
 	"github.com/hxcuber/friends-management/api/pkg/db/pg"
 
 	"github.com/cenkalti/backoff/v4"
@@ -14,7 +13,7 @@ import (
 // Registry is the registry of all the domain specific repositories and also provides transaction capabilities.
 type Registry interface {
 	// System returns the system repo
-	System() systemRepository.Repository
+	System() system.Repository
 	// DoInTx wraps operations within a db tx
 	DoInTx(ctx context.Context, txFunc func(ctx context.Context, txRepo Registry) error, overrideBackoffPolicy backoff.BackOff) error
 }
@@ -23,18 +22,18 @@ type Registry interface {
 func New(dbConn pg.BeginnerExecutor) Registry {
 	return impl{
 		dbConn: dbConn,
-		system: systemRepository.New(dbConn),
+		system: system.New(dbConn),
 	}
 }
 
 type impl struct {
 	dbConn pg.BeginnerExecutor // Only used to start DB txns
 	tx     pg.ContextExecutor  // Only used to keep track if txn has already been started to prevent devs from accidentally creating nested txns
-	system systemRepository.Repository
+	system system.Repository
 }
 
 // System returns the system repo
-func (i impl) System() systemRepository.Repository {
+func (i impl) System() system.Repository {
 	return i.system
 }
 
@@ -51,7 +50,7 @@ func (i impl) DoInTx(ctx context.Context, txFunc func(ctx context.Context, txRep
 	return pg.TxWithBackOff(ctx, overrideBackoffPolicy, i.dbConn, func(tx pg.ContextExecutor) error {
 		newI := impl{
 			tx:     tx,
-			system: systemRepository.New(tx),
+			system: system.New(tx),
 		}
 		return txFunc(ctx, newI)
 	})

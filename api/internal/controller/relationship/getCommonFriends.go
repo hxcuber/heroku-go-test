@@ -2,18 +2,18 @@ package relationship
 
 import "context"
 
-func (i impl) GetCommonFriendList(ctx context.Context, email1 string, email2 string) ([]string, error) {
-	user1List, err := i.GetFriendList(ctx, email1)
+func (i impl) GetCommonFriends(ctx context.Context, email1 string, email2 string) ([]string, error) {
+	user1Friends, err := i.GetFriends(ctx, email1)
 	if err != nil {
 		return nil, err
 	}
 
-	user2List, err := i.GetFriendList(ctx, email2)
+	user2Friends, err := i.GetFriends(ctx, email2)
 	if err != nil {
 		return nil, err
 	}
 
-	return intersection(user1List, user2List), nil
+	return intersection(user1Friends, user2Friends), nil
 }
 
 func intersection(s1 []string, s2 []string) []string {

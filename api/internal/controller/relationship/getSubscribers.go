@@ -6,20 +6,20 @@ import (
 	"github.com/hxcuber/friends-management/api/internal/repository"
 )
 
-func (i impl) GetFriendList(ctx context.Context, email string) ([]string, error) {
-	var friends model.UserSlice
+func (i impl) GetSubscribers(ctx context.Context, email string) ([]string, error) {
+	var subscribers model.UserSlice
 	err := i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
 		var err error
-		friends, err = i.repo.Relationship().GetFriendList(ctx, email)
+		subscribers, err = i.repo.Relationship().GetSubscribers(ctx, email)
 		return err
 	}, nil)
 	if err != nil {
 		return nil, err
 	}
-	var friendsEmail []string
+	var subscribersEmail []string
 
-	for _, friend := range friends {
-		friendsEmail = append(friendsEmail, friend.UserEmail)
+	for _, subscriber := range subscribers {
+		subscribersEmail = append(subscribersEmail, subscriber.UserEmail)
 	}
-	return friendsEmail, nil
+	return subscribersEmail, nil
 }

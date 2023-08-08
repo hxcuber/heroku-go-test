@@ -8,8 +8,8 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-func (i impl) GetSubscribers(ctx context.Context, email string) (model.UserSlice, error) {
-	sender, err := i.getUserByEmail(ctx, email)
+func (i impl) GetSubscribers(ctx context.Context, senderEmail string) (model.UserSlice, error) {
+	sender, err := i.getUserByEmail(ctx, senderEmail)
 	if err != nil {
 		return nil, err
 	}
@@ -20,7 +20,9 @@ func (i impl) GetSubscribers(ctx context.Context, email string) (model.UserSlice
 		orm.UserTableColumns.UserID,
 		orm.RelationshipTableColumns.ReceiverID)),
 		orm.RelationshipWhere.SenderID.EQ(sender.UserID),
-		qm.And(fmt.Sprintf("%s=?", orm.RelationshipTableColumns.Status), "r_subscribed_s"),
+		qm.Expr(orm.RelationshipWhere.Status.EQ("r_subscribed_s"),
+			qm.Or2(qm.Expr(orm.RelationshipWhere.Friends.EQ(true),
+				orm.RelationshipWhere.Status.EQ("none")))),
 	).Bind(ctx, i.dbConn, &subscriberList)
 	if err != nil {
 		return nil, err

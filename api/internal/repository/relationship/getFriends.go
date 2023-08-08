@@ -8,7 +8,7 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-func (i impl) GetFriendList(ctx context.Context, email string) (model.UserSlice, error) {
+func (i impl) GetFriends(ctx context.Context, email string) (model.UserSlice, error) {
 	user, err := i.getUserByEmail(ctx, email)
 	if err != nil {
 		return nil, err
@@ -20,7 +20,7 @@ func (i impl) GetFriendList(ctx context.Context, email string) (model.UserSlice,
 		orm.UserTableColumns.UserID,
 		orm.RelationshipTableColumns.ReceiverID)),
 		orm.RelationshipWhere.SenderID.EQ(user.UserID),
-		qm.And(fmt.Sprintf("%s=?", orm.RelationshipTableColumns.Friends), true),
+		orm.RelationshipWhere.Friends.EQ(true),
 	).Bind(ctx, i.dbConn, &friendList)
 	if err != nil {
 		return nil, err

@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func (h Handler) GetFriendList() http.HandlerFunc {
+func (h Handler) GetFriends() http.HandlerFunc {
 	return rest.ErrorHandler(func(w http.ResponseWriter, r *http.Request) (error, int) {
 		var request email.Request
 		err := render.Bind(r, &request)
@@ -16,7 +16,7 @@ func (h Handler) GetFriendList() http.HandlerFunc {
 			return err, http.StatusBadRequest
 		}
 
-		list, err := h.ctrl.GetFriendList(r.Context(), request.Email)
+		list, err := h.ctrl.GetFriends(r.Context(), request.Email)
 		if err != nil {
 			return err, http.StatusInternalServerError
 		}

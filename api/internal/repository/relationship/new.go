@@ -7,7 +7,7 @@ import (
 )
 
 type Repository interface {
-	GetFriendList(ctx context.Context, email string) (model.UserSlice, error)
+	GetFriends(ctx context.Context, email string) (model.UserSlice, error)
 	GetSubscribers(ctx context.Context, email string) (model.UserSlice, error)
 }
 

@@ -7,6 +7,7 @@ import (
 
 type Controller interface {
 	GetFriendList(ctx context.Context, email string) ([]string, error)
+	GetCommonFriendList(ctx context.Context, email1 string, email2 string) ([]string, error)
 }
 
 type impl struct {

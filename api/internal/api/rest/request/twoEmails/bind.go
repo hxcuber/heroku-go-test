@@ -1,4 +1,4 @@
-package twoFriends
+package twoEmails
 
 import (
 	"errors"

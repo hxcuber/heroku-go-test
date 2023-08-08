@@ -7,8 +7,8 @@ type Response struct {
 	Recipients []string `json:"recipients"`
 }
 
-func New(list []string, statusCode int) Response {
-	return Response{
+func New(list []string, statusCode int) *Response {
+	return &Response{
 		Response: basicSuccess.Response{
 			Success:        true,
 			HttpStatusCode: statusCode,

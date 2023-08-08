@@ -9,8 +9,8 @@ type Response struct {
 	ErrMessage string `json:"error_message"`
 }
 
-func New(message string, statusCode int) Response {
-	return Response{
+func New(message string, statusCode int) *Response {
+	return &Response{
 		Response: basicSuccess.Response{
 			Success:        false,
 			HttpStatusCode: statusCode,

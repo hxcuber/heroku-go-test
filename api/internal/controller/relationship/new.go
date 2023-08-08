@@ -1,10 +1,12 @@
 package relationship
 
 import (
+	"context"
 	"github.com/hxcuber/friends-management/api/internal/repository"
 )
 
 type Controller interface {
+	GetFriendList(ctx context.Context, email string) ([]string, error)
 }
 
 type impl struct {

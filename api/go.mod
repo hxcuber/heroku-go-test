@@ -6,6 +6,7 @@ require (
 	github.com/cenkalti/backoff/v4 v4.2.1
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-chi/chi/v5 v5.0.10
+	github.com/go-chi/render v1.0.3
 	github.com/kat-co/vala v0.0.0-20170210184112-42e1d8b61f12
 	github.com/lib/pq v1.10.9
 	github.com/pkg/errors v0.9.1
@@ -17,6 +18,7 @@ require (
 )
 
 require (
+	github.com/ajg/form v1.5.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gofrs/uuid v4.2.0+incompatible // indirect

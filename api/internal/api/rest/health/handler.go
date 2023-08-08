@@ -1,5 +1,7 @@
 package health
 
+import "github.com/hxcuber/friends-management/api/internal/controller/system"
+
 // Handler is the web handler for this pkg
 type Handler struct {
 	systemCtrl system.Controller

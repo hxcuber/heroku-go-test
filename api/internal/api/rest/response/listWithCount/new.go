@@ -8,8 +8,8 @@ type Response struct {
 	Count   int      `json:"count"`
 }
 
-func New(list []string, statusCode int) Response {
-	return Response{
+func New(list []string, statusCode int) *Response {
+	return &Response{
 		Response: basicSuccess.Response{
 			Success:        true,
 			HttpStatusCode: statusCode,

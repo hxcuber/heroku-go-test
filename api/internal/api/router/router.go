@@ -5,15 +5,17 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/hxcuber/friends-management/api/internal/api/rest/health"
+	"github.com/hxcuber/friends-management/api/internal/api/rest/relationship"
 	"net/http"
 )
 
 // Router defines the routes & handlers of the app
 type Router struct {
-	ctx                  context.Context
-	corsOrigins          []string
-	isGQLIntrospectionOn bool
-	healthRESTHandler    health.Handler
+	ctx                     context.Context
+	corsOrigins             []string
+	isGQLIntrospectionOn    bool
+	healthRESTHandler       health.Handler
+	relationshipRESTHandler relationship.Handler
 }
 
 // Handler returns the Handler for use by the server
@@ -28,6 +30,7 @@ func (rtr Router) Handler() http.Handler {
 		middleware.Recoverer,    // recover from panics without crashing server
 	)
 
+	r.Get("/friends", rtr.relationshipRESTHandler.GetFriendList())
 	r.Get("/_/ready", rtr.healthRESTHandler.CheckReadiness())
 	return r
 }

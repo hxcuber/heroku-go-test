@@ -5,8 +5,8 @@ type Response struct {
 	HttpStatusCode int  `json:"-"`
 }
 
-func New(statusCode int) Response {
-	return Response{
+func New(statusCode int) *Response {
+	return &Response{
 		Success:        true,
 		HttpStatusCode: statusCode,
 	}

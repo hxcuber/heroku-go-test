@@ -15,13 +15,11 @@ func (i impl) GetFriendList(ctx context.Context, email string) (model.UserSlice,
 	}
 
 	var friendList model.UserSlice
-	err = orm.Relationships(qm.Select(orm.UserTableColumns.UserID, orm.UserTableColumns.UserEmail),
-		qm.From(orm.TableNames.Users),
-		qm.InnerJoin(fmt.Sprintf("%s on %s=%s",
-			orm.TableNames.Relationships,
-			orm.UserTableColumns.UserID,
-			orm.RelationshipTableColumns.SenderID)),
-		orm.RelationshipWhere.SenderID.EQ(user.UserID),
+	err = orm.Users(qm.InnerJoin(fmt.Sprintf("%s on %s=%s",
+		orm.TableNames.Relationships,
+		orm.UserTableColumns.UserID,
+		orm.RelationshipTableColumns.SenderID)),
+		orm.RelationshipWhere.ReceiverID.EQ(user.UserID),
 		qm.And(fmt.Sprintf("%s=?", orm.RelationshipTableColumns.Friends), true),
 	).Bind(ctx, i.dbConn, &friendList)
 	if err != nil {

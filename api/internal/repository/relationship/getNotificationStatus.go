@@ -2,6 +2,8 @@ package relationship
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"github.com/hxcuber/friends-management/api/internal/repository/orm"
 )
 
@@ -18,6 +20,9 @@ func (i impl) GetNotificationStatus(ctx context.Context, senderEmail string, rec
 
 	relationship, err := orm.FindRelationship(ctx, i.dbConn, sender.UserID, receiver.UserID, orm.RelationshipColumns.Status)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return "none", nil
+		}
 		return "", err
 	}
 

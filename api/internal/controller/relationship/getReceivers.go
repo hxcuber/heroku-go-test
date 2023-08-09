@@ -40,10 +40,16 @@ func (i impl) GetReceivers(ctx context.Context, senderEmail string, text string)
 	if err != nil {
 		return nil, err
 	}
-	var subscribersEmail []string
+
+	var receiversEmail []string
 
 	for _, subscriber := range subscribers {
-		subscribersEmail = append(subscribersEmail, subscriber.UserEmail)
+		receiversEmail = append(receiversEmail, subscriber.UserEmail)
 	}
-	return subscribersEmail, nil
+
+	for _, email := range validEmailsMentioned {
+		receiversEmail = append(receiversEmail, email)
+	}
+
+	return receiversEmail, nil
 }

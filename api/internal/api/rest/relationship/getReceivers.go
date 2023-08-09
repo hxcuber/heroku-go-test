@@ -4,6 +4,7 @@ import (
 	"github.com/go-chi/render"
 	"github.com/hxcuber/friends-management/api/internal/api/rest"
 	"github.com/hxcuber/friends-management/api/internal/api/rest/request/senderText"
+	"github.com/hxcuber/friends-management/api/internal/api/rest/response/recipients"
 	"net/http"
 )
 
@@ -14,6 +15,16 @@ func (h Handler) GetReceivers() http.HandlerFunc {
 		if err != nil {
 			return err, http.StatusBadRequest
 		}
-		return nil, 0
+
+		receivers, err := h.ctrl.GetReceivers(r.Context(), request.Sender, request.Text)
+		if err != nil {
+			return err, http.StatusInternalServerError
+		}
+
+		err = render.Render(w, r, recipients.New(receivers, http.StatusOK))
+		if err != nil {
+			return err, http.StatusInternalServerError
+		}
+		return nil, http.StatusOK
 	})
 }

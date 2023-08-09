@@ -16,7 +16,7 @@ func (req *Request) Bind(r *http.Request) error {
 		return errors.New("2 elements required, more than 2 given\n")
 	case len(req.Friends) == 2:
 		for _, e := range req.Friends {
-			if err := request.IsEmail(e, "elements of friends"); err != nil {
+			if err := request.IsEmailError(e, "elements of friends"); err != nil {
 				return err
 			}
 		}

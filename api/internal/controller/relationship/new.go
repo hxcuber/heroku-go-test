@@ -8,7 +8,7 @@ import (
 type Controller interface {
 	GetFriends(ctx context.Context, email string) ([]string, error)
 	GetCommonFriends(ctx context.Context, email1 string, email2 string) ([]string, error)
-	GetSubscribers(ctx context.Context, email string) ([]string, error)
+	GetReceivers(ctx context.Context, email string, text string) ([]string, error)
 }
 
 type impl struct {

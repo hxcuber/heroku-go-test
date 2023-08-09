@@ -15,11 +15,11 @@ func (req *Request) Bind(r *http.Request) error {
 		return errors.New("target is a required field")
 	}
 
-	if err := request.IsEmail(req.Requestor, "requestor"); err != nil {
+	if err := request.IsEmailError(req.Requestor, "requestor"); err != nil {
 		return err
 	}
 
-	if err := request.IsEmail(req.Target, "target"); err != nil {
+	if err := request.IsEmailError(req.Target, "target"); err != nil {
 		return err
 	}
 

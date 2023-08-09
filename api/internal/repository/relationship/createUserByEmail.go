@@ -11,6 +11,7 @@ func (i impl) CreateUserByEmail(ctx context.Context, email string) error {
 		UserID:    0,
 		UserEmail: email,
 	}
+
 	insertColumns := boil.Blacklist(orm.UserColumns.UserID)
 
 	if err := newUser.Insert(ctx, i.dbConn, insertColumns); err != nil {

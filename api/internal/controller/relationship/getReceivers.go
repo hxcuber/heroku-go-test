@@ -9,32 +9,28 @@ import (
 )
 
 func (i impl) GetReceivers(ctx context.Context, senderEmail string, text string) ([]string, error) {
-	tokens := strings.Split(strings.ReplaceAll(text, ",", " "), " ")
 
-	var emailsInText []string
+	tokens := strings.Split(strings.ReplaceAll(text, ",", " "), " ")
+	var emailList []string
 	for _, token := range tokens {
 		if util.IsEmail(token) {
-			emailsInText = append(emailsInText, token)
+			emailList = append(emailList, token)
 		}
 	}
 
-	var validEmailsMentioned []string
-
+	var validUsersMentioned model.UserSlice
 	var subscribers model.UserSlice
 	err := i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
 		var err error
-		subscribers, err = i.repo.Relationship().GetSubscribers(ctx, senderEmail)
+		subscribers, err = txRepo.Relationship().GetSubscribers(ctx, senderEmail)
 		if err != nil {
 			return err
 		}
 
-		for _, email := range emailsInText {
-			status, err := i.repo.Relationship().GetNotificationStatus(ctx, senderEmail, email)
-			if err == nil || status != "r_blocked_s" {
-				validEmailsMentioned = append(validEmailsMentioned, email)
-			}
+		validUsersMentioned, err = txRepo.Relationship().GetReceiversFromEmails(ctx, senderEmail, emailList)
+		if err != nil {
+			return err
 		}
-
 		return nil
 	}, nil)
 	if err != nil {
@@ -43,12 +39,18 @@ func (i impl) GetReceivers(ctx context.Context, senderEmail string, text string)
 
 	var receiversEmail []string
 
+	hash := make(map[string]bool)
+
 	for _, subscriber := range subscribers {
+		hash[subscriber.UserEmail] = true
 		receiversEmail = append(receiversEmail, subscriber.UserEmail)
 	}
 
-	for _, email := range validEmailsMentioned {
-		receiversEmail = append(receiversEmail, email)
+	for _, validUserMentioned := range validUsersMentioned {
+		if !hash[validUserMentioned.UserEmail] {
+			receiversEmail = append(receiversEmail, validUserMentioned.UserEmail)
+			hash[validUserMentioned.UserEmail] = true
+		}
 	}
 
 	return receiversEmail, nil

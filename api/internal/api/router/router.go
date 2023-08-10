@@ -32,7 +32,7 @@ func (rtr Router) Handler() http.Handler {
 
 	r.Get("/friends", rtr.relationshipRESTHandler.GetFriends())
 	r.Get("/commonFriends", rtr.relationshipRESTHandler.GetCommonFriends())
-	r.Get("/update-receivers", rtr.relationshipRESTHandler.GetReceivers())
+	r.Get("/notification-receivers", rtr.relationshipRESTHandler.GetReceivers())
 	r.Get("/_/ready", rtr.healthRESTHandler.CheckReadiness())
 	return r
 }

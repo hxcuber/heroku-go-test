@@ -59,8 +59,9 @@ func (i impl) DoInTx(ctx context.Context, txFunc func(ctx context.Context, txRep
 
 	return pg.TxWithBackOff(ctx, overrideBackoffPolicy, i.dbConn, func(tx pg.ContextExecutor) error {
 		newI := impl{
-			tx:     tx,
-			system: system.New(tx),
+			tx:           tx,
+			system:       system.New(tx),
+			relationship: relationship.New(tx),
 		}
 		return txFunc(ctx, newI)
 	})

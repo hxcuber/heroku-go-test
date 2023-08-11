@@ -14,7 +14,8 @@ func (i impl) GetFriends(ctx context.Context, email string) (model.UserSlice, er
 		return nil, err
 	}
 
-	var friendList model.UserSlice
+	//var friendList model.UserSlice
+	friendList := &model.UserSlice{}
 	err = orm.Users(
 		qm.InnerJoin(fmt.Sprintf("%s on %s=%s",
 			orm.TableNames.Relationships,
@@ -22,9 +23,9 @@ func (i impl) GetFriends(ctx context.Context, email string) (model.UserSlice, er
 			orm.RelationshipTableColumns.ReceiverID)),
 		orm.RelationshipWhere.SenderID.EQ(user.UserID),
 		orm.RelationshipWhere.Friends.EQ(true),
-	).Bind(ctx, i.dbConn, &friendList)
+	).Bind(ctx, i.dbConn, friendList)
 	if err != nil {
 		return nil, err
 	}
-	return friendList, nil
+	return *friendList, nil
 }

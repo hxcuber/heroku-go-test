@@ -40,6 +40,7 @@ func (i impl) GetReceivers(ctx context.Context, senderEmail string, text string)
 
 	var receiversEmail []string
 
+	// Removing duplicates
 	hash := make(map[string]bool)
 
 	for _, subscriber := range subscribers {

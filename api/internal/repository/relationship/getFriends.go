@@ -14,8 +14,8 @@ func (i impl) GetFriends(ctx context.Context, email string) (model.UserSlice, er
 		return nil, err
 	}
 
-	//var friendList model.UserSlice
-	friendList := &model.UserSlice{}
+	// See https://github.com/golang/go/wiki/CodeReviewComments#declaring-empty-slices
+	var friendList model.UserSlice
 	err = orm.Users(
 		qm.InnerJoin(fmt.Sprintf("%s on %s=%s",
 			orm.TableNames.Relationships,
@@ -27,5 +27,5 @@ func (i impl) GetFriends(ctx context.Context, email string) (model.UserSlice, er
 	if err != nil {
 		return nil, err
 	}
-	return *friendList, nil
+	return friendList, nil
 }

@@ -7,7 +7,8 @@ import (
 )
 
 func (i impl) GetCommonFriends(ctx context.Context, email1 string, email2 string) ([]string, error) {
-	var commonFriends model.UserSlice
+	var user1Friends model.UserSlice
+	var user2Friends model.UserSlice
 	err := i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
 		user1, err := txRepo.Relationship().GetUserByEmail(ctx, email1)
 		if err != nil {
@@ -19,7 +20,8 @@ func (i impl) GetCommonFriends(ctx context.Context, email1 string, email2 string
 			return err
 		}
 
-		commonFriends, err = txRepo.Relationship().GetCommonFriends(ctx, user1, user2)
+		user1Friends, err = txRepo.Relationship().GetFriends(ctx, user1)
+		user2Friends, err = txRepo.Relationship().GetFriends(ctx, user2)
 		return err
 	}, nil)
 	if err != nil {
@@ -27,8 +29,15 @@ func (i impl) GetCommonFriends(ctx context.Context, email1 string, email2 string
 	}
 	var commonFriendsEmail []string
 
-	for _, friend := range commonFriends {
-		commonFriendsEmail = append(commonFriendsEmail, friend.UserEmail)
+	hash := make(map[string]bool)
+	for _, friend := range user1Friends {
+		hash[friend.UserEmail] = true
+	}
+
+	for _, friend := range user2Friends {
+		if hash[friend.UserEmail] {
+			commonFriendsEmail = append(commonFriendsEmail, friend.UserEmail)
+		}
 	}
 
 	return commonFriendsEmail, nil

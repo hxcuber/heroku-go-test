@@ -2,8 +2,8 @@ output = "../../internal/repository/orm"
 pkgname = "orm"
 [psql]
 dbname = "friends"
-host   = "localhost"
-port   = 5432
-user   = "postgres"
-pass   = "postgres"
+host = "localhost"
+port = 5432
+user = "postgres"
+pass = "postgres"
 sslmode = "disable"

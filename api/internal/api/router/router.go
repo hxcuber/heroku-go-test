@@ -30,8 +30,9 @@ func (rtr Router) Handler() http.Handler {
 		middleware.Recoverer,    // recover from panics without crashing server
 	)
 
-	r.Get("/commonFriends", rtr.relationshipRESTHandler.GetCommonFriends())
 	r.Get("/friends", rtr.relationshipRESTHandler.GetFriends())
+	r.Get("/commonFriends", rtr.relationshipRESTHandler.GetCommonFriends())
+	r.Get("/notification-receivers", rtr.relationshipRESTHandler.GetReceivers())
 	r.Get("/_/ready", rtr.healthRESTHandler.CheckReadiness())
 	return r
 }

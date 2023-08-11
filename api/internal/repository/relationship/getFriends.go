@@ -14,11 +14,13 @@ func (i impl) GetFriends(ctx context.Context, email string) (model.UserSlice, er
 		return nil, err
 	}
 
+	// See https://github.com/golang/go/wiki/CodeReviewComments#declaring-empty-slices
 	var friendList model.UserSlice
-	err = orm.Users(qm.InnerJoin(fmt.Sprintf("%s on %s=%s",
-		orm.TableNames.Relationships,
-		orm.UserTableColumns.UserID,
-		orm.RelationshipTableColumns.ReceiverID)),
+	err = orm.Users(
+		qm.InnerJoin(fmt.Sprintf("%s on %s=%s",
+			orm.TableNames.Relationships,
+			orm.UserTableColumns.UserID,
+			orm.RelationshipTableColumns.ReceiverID)),
 		orm.RelationshipWhere.SenderID.EQ(user.UserID),
 		orm.RelationshipWhere.Friends.EQ(true),
 	).Bind(ctx, i.dbConn, &friendList)

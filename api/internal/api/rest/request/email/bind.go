@@ -10,5 +10,5 @@ func (req *Request) Bind(r *http.Request) error {
 	if req.Email == "" {
 		return errors.New("email is a required field\n")
 	}
-	return request.IsEmail(req.Email, "email")
+	return request.IsEmailError(req.Email, "email")
 }

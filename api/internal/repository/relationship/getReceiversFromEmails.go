@@ -17,28 +17,35 @@ func (i impl) GetReceiversFromEmails(ctx context.Context, senderEmail string, em
 
 	var inClauseBuilder strings.Builder
 	inClauseBuilder.WriteString("(")
+	var emailsInterface []interface{}
 	for index, email := range emails {
 		if index == 0 {
 			inClauseBuilder.WriteString(fmt.Sprintf("'%s'", email))
 		} else {
 			inClauseBuilder.WriteString(fmt.Sprintf(",'%s'", email))
 		}
+		emailsInterface = append(emailsInterface, email)
 	}
 	inClauseBuilder.WriteString(")")
 
+	/*
+		SQL injection is avoided because the emails are verified at the controller stage,
+		and the rest are all constants.
+	*/
 	query := fmt.Sprintf(
 		"SELECT %s, %s FROM %s "+
-			"WHERE %s IN $1 "+
+			"WHERE %s IN %s "+
 			"EXCEPT "+
 			"SELECT %s, %s FROM %s "+
 			"JOIN %s ON %s=%s "+
-			"WHERE %s=$2 "+
-			"AND %s IN $1 "+
+			"WHERE %s=%d "+
+			"AND %s IN %s "+
 			"AND %s='%s'",
 		orm.UserTableColumns.UserID,
 		orm.UserTableColumns.UserEmail,
 		orm.TableNames.Users,
 		orm.UserTableColumns.UserEmail,
+		inClauseBuilder.String(),
 		orm.UserTableColumns.UserID,
 		orm.UserTableColumns.UserEmail,
 		orm.TableNames.Users,
@@ -46,13 +53,15 @@ func (i impl) GetReceiversFromEmails(ctx context.Context, senderEmail string, em
 		orm.UserTableColumns.UserID,
 		orm.RelationshipTableColumns.ReceiverID,
 		orm.RelationshipTableColumns.SenderID,
+		sender.UserID,
 		orm.UserTableColumns.UserEmail,
+		inClauseBuilder.String(),
 		orm.RelationshipTableColumns.Status,
 		orm.SubscriptionStatusRBlockedS,
 	)
 
 	var finalUsers model.UserSlice
-	err = orm.NewQuery(qm.SQL(query, inClauseBuilder.String(), sender.UserID)).Bind(ctx, i.dbConn, &finalUsers)
+	err = orm.NewQuery(qm.SQL(query)).Bind(ctx, i.dbConn, &finalUsers)
 	if err != nil {
 		return nil, err
 	}

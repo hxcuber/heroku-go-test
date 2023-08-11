@@ -9,8 +9,9 @@ import (
 )
 
 func (i impl) GetReceivers(ctx context.Context, senderEmail string, text string) ([]string, error) {
-
-	tokens := strings.Split(strings.ReplaceAll(text, ",", " "), " ")
+	// Replacing "'" with " " prevents the user from escaping the "'" used in the queries
+	// preventing SQL injection.
+	tokens := strings.Split(strings.ReplaceAll(strings.ReplaceAll(text, ",", " "), "'", " "), " ")
 	var emailList []string
 	for _, token := range tokens {
 		if util.IsEmail(token) {

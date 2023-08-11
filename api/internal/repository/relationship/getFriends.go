@@ -8,15 +8,10 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-func (i impl) GetFriends(ctx context.Context, email string) (model.UserSlice, error) {
-	user, err := i.getUserByEmail(ctx, email)
-	if err != nil {
-		return nil, err
-	}
-
+func (i impl) GetFriends(ctx context.Context, user model.User) (model.UserSlice, error) {
 	// See https://github.com/golang/go/wiki/CodeReviewComments#declaring-empty-slices
 	var friendList model.UserSlice
-	err = orm.Users(
+	err := orm.Users(
 		qm.InnerJoin(fmt.Sprintf("%s on %s=%s",
 			orm.TableNames.Relationships,
 			orm.UserTableColumns.UserID,

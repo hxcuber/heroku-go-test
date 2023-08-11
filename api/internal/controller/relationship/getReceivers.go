@@ -22,13 +22,17 @@ func (i impl) GetReceivers(ctx context.Context, senderEmail string, text string)
 	var validUsersMentioned model.UserSlice
 	var subscribers model.UserSlice
 	err := i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
-		var err error
-		subscribers, err = txRepo.Relationship().GetSubscribers(ctx, senderEmail)
+		sender, err := txRepo.Relationship().GetUserByEmail(ctx, senderEmail)
 		if err != nil {
 			return err
 		}
 
-		validUsersMentioned, err = txRepo.Relationship().GetReceiversFromEmails(ctx, senderEmail, emailList)
+		subscribers, err = txRepo.Relationship().GetSubscribers(ctx, sender)
+		if err != nil {
+			return err
+		}
+
+		validUsersMentioned, err = txRepo.Relationship().GetReceiversFromEmails(ctx, sender, emailList)
 		if err != nil {
 			return err
 		}

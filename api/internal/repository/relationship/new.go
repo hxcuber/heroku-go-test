@@ -7,9 +7,10 @@ import (
 )
 
 type Repository interface {
-	GetFriends(ctx context.Context, email string) (model.UserSlice, error)
-	GetSubscribers(ctx context.Context, email string) (model.UserSlice, error)
-	GetReceiversFromEmails(ctx context.Context, senderEmail string, emails []string) (model.UserSlice, error)
+	GetFriends(ctx context.Context, user model.User) (model.UserSlice, error)
+	GetSubscribers(ctx context.Context, sender model.User) (model.UserSlice, error)
+	GetReceiversFromEmails(ctx context.Context, sender model.User, emails []string) (model.UserSlice, error)
+	GetUserByEmail(ctx context.Context, email string) (model.User, error)
 }
 
 type impl struct {

@@ -10,12 +10,12 @@ func (i impl) GetFriends(ctx context.Context, email string) ([]string, error) {
 
 	var friends model.UserSlice
 	err := i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
-		sender, err := txRepo.Relationship().GetUserByEmail(ctx, email)
+		user, err := txRepo.Relationship().GetUserByEmail(ctx, email)
 		if err != nil {
 			return err
 		}
 
-		friends, err = txRepo.Relationship().GetFriends(ctx, sender)
+		friends, err = txRepo.Relationship().GetFriends(ctx, user)
 		return err
 	}, nil)
 	if err != nil {

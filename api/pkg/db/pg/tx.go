@@ -29,7 +29,7 @@ func TxWithBackOff(ctx context.Context, b backoff.BackOff, dbconn BeginnerExecut
 	// invoked `runtime.Goexit` (like how tests invokes t.Fatal t.FailNow require.Xyz)
 	defer tx.Rollback()
 
-	tx = &hollywoodTx{
+	tx = &friendsTx{
 		Transactor: tx,
 		info:       dbconn.InstanceInfo(),
 		ctx:        ctx,

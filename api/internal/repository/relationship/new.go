@@ -9,7 +9,7 @@ import (
 type Repository interface {
 	GetFriends(ctx context.Context, email string) (model.UserSlice, error)
 	GetSubscribers(ctx context.Context, email string) (model.UserSlice, error)
-	GetNotificationStatus(ctx context.Context, senderEmail string, receiverEmail string) (string, error)
+	GetReceiversFromEmails(ctx context.Context, senderEmail string, emails []string) (model.UserSlice, error)
 }
 
 type impl struct {

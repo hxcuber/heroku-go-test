@@ -10,7 +10,7 @@ func (i impl) GetFriends(ctx context.Context, email string) ([]string, error) {
 	var friends model.UserSlice
 	err := i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
 		var err error
-		friends, err = i.repo.Relationship().GetFriends(ctx, email)
+		friends, err = txRepo.Relationship().GetFriends(ctx, email)
 		return err
 	}, nil)
 	if err != nil {

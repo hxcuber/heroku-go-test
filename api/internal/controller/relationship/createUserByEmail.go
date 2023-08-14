@@ -6,16 +6,8 @@ import (
 )
 
 func (i impl) CreateUserByEmail(ctx context.Context, email string) error {
-	err := i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
-		err := txRepo.Relationship().CreateUserByEmail(ctx, email)
-		if err != nil {
-			return err
-		}
-
-		return nil
+	return i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
+		return txRepo.Relationship().CreateUserByEmail(ctx, email)
 	}, nil)
-	if err != nil {
-		return err
-	}
-	return nil
+
 }

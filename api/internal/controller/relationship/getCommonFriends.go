@@ -1,34 +1,44 @@
 package relationship
 
-import "context"
+import (
+	"context"
+	"github.com/hxcuber/friends-management/api/internal/controller/model"
+	"github.com/hxcuber/friends-management/api/internal/repository"
+)
 
 func (i impl) GetCommonFriends(ctx context.Context, email1 string, email2 string) ([]string, error) {
-	user1Friends, err := i.GetFriends(ctx, email1)
+	var user1Friends model.UserSlice
+	var user2Friends model.UserSlice
+	err := i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
+		user1, err := txRepo.Relationship().GetUserByEmail(ctx, email1)
+		if err != nil {
+			return err
+		}
+
+		user2, err := txRepo.Relationship().GetUserByEmail(ctx, email2)
+		if err != nil {
+			return err
+		}
+
+		user1Friends, err = txRepo.Relationship().GetFriends(ctx, user1)
+		user2Friends, err = txRepo.Relationship().GetFriends(ctx, user2)
+		return err
+	}, nil)
 	if err != nil {
 		return nil, err
 	}
+	var commonFriendsEmail []string
 
-	user2Friends, err := i.GetFriends(ctx, email2)
-	if err != nil {
-		return nil, err
-	}
-
-	return intersection(user1Friends, user2Friends), nil
-}
-
-func intersection(s1 []string, s2 []string) []string {
 	hash := make(map[string]bool)
-
-	var result []string
-	for _, s := range s1 {
-		hash[s] = true
+	for _, friend := range user1Friends {
+		hash[friend.UserEmail] = true
 	}
 
-	for _, s := range s2 {
-		if hash[s] {
-			result = append(result, s)
+	for _, friend := range user2Friends {
+		if hash[friend.UserEmail] {
+			commonFriendsEmail = append(commonFriendsEmail, friend.UserEmail)
 		}
 	}
 
-	return result
+	return commonFriendsEmail, nil
 }

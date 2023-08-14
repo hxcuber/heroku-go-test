@@ -9,12 +9,7 @@ import (
 	"strings"
 )
 
-func (i impl) GetReceiversFromEmails(ctx context.Context, senderEmail string, emails []string) (model.UserSlice, error) {
-	sender, err := i.getUserByEmail(ctx, senderEmail)
-	if err != nil {
-		return nil, err
-	}
-
+func (i impl) GetReceiversFromEmails(ctx context.Context, sender model.User, emails []string) (model.UserSlice, error) {
 	var inClauseBuilder strings.Builder
 	inClauseBuilder.WriteString("(")
 	var emailsInterface []interface{}
@@ -61,7 +56,7 @@ func (i impl) GetReceiversFromEmails(ctx context.Context, senderEmail string, em
 	)
 
 	var finalUsers model.UserSlice
-	err = orm.NewQuery(qm.SQL(query)).Bind(ctx, i.dbConn, &finalUsers)
+	err := orm.NewQuery(qm.SQL(query)).Bind(ctx, i.dbConn, &finalUsers)
 	if err != nil {
 		return nil, err
 	}

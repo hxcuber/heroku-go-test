@@ -8,14 +8,9 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-func (i impl) GetSubscribers(ctx context.Context, senderEmail string) (model.UserSlice, error) {
-	sender, err := i.getUserByEmail(ctx, senderEmail)
-	if err != nil {
-		return nil, err
-	}
-
+func (i impl) GetSubscribers(ctx context.Context, sender model.User) (model.UserSlice, error) {
 	var subscriberList model.UserSlice
-	err = orm.Users(
+	err := orm.Users(
 		qm.InnerJoin(fmt.Sprintf("%s on %s=%s",
 			orm.TableNames.Relationships,
 			orm.UserTableColumns.UserID,

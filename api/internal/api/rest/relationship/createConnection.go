@@ -23,7 +23,7 @@ func (h Handler) CreateConnection() http.HandlerFunc {
 
 		statusCode := http.StatusOK
 		if created {
-			statusCode = http.StatusCreated
+			statusCode = http.StatusNoContent
 		}
 
 		err = render.Render(w, r, basicSuccess.New(statusCode))

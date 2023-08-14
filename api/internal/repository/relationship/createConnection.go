@@ -34,5 +34,5 @@ func (i impl) CreateConnection(ctx context.Context, user1 model.User, user2 mode
 		return false, err
 	}
 
-	return rela1to2.Status == "none", nil
+	return rela1to2.Status != "" || rela2to1.Status != "", nil
 }

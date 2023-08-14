@@ -21,6 +21,11 @@ func (h Handler) GetReceivers() http.HandlerFunc {
 			return err, http.StatusInternalServerError
 		}
 
+		// purely for JSON conversion purposes
+		if receivers == nil {
+			receivers = []string{}
+		}
+
 		if err = render.Render(w, r, recipients.New(receivers, http.StatusOK)); err != nil {
 			return err, http.StatusInternalServerError
 		}

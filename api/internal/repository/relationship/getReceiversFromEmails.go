@@ -2,6 +2,8 @@ package relationship
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/hxcuber/friends-management/api/internal/controller/model"
 	"github.com/hxcuber/friends-management/api/internal/repository/orm"
@@ -9,36 +11,38 @@ import (
 	"strings"
 )
 
-func (i impl) GetReceiversFromEmails(ctx context.Context, senderEmail string, emails []string) (model.UserSlice, error) {
-	sender, err := i.getUserByEmail(ctx, senderEmail)
-	if err != nil {
-		return nil, err
-	}
-
+func (i impl) GetReceiversFromEmails(ctx context.Context, sender model.User, emails []string) (model.UserSlice, error) {
 	var inClauseBuilder strings.Builder
 	inClauseBuilder.WriteString("(")
+	var emailsInterface []interface{}
 	for index, email := range emails {
 		if index == 0 {
 			inClauseBuilder.WriteString(fmt.Sprintf("'%s'", email))
 		} else {
 			inClauseBuilder.WriteString(fmt.Sprintf(",'%s'", email))
 		}
+		emailsInterface = append(emailsInterface, email)
 	}
 	inClauseBuilder.WriteString(")")
 
+	/*
+		SQL injection is avoided because the emails are verified at the controller stage,
+		and the rest are all constants.
+	*/
 	query := fmt.Sprintf(
 		"SELECT %s, %s FROM %s "+
-			"WHERE %s IN $1 "+
+			"WHERE %s IN %s "+
 			"EXCEPT "+
 			"SELECT %s, %s FROM %s "+
 			"JOIN %s ON %s=%s "+
-			"WHERE %s=$2 "+
-			"AND %s IN $1 "+
+			"WHERE %s=%d "+
+			"AND %s IN %s "+
 			"AND %s='%s'",
 		orm.UserTableColumns.UserID,
 		orm.UserTableColumns.UserEmail,
 		orm.TableNames.Users,
 		orm.UserTableColumns.UserEmail,
+		inClauseBuilder.String(),
 		orm.UserTableColumns.UserID,
 		orm.UserTableColumns.UserEmail,
 		orm.TableNames.Users,
@@ -46,14 +50,19 @@ func (i impl) GetReceiversFromEmails(ctx context.Context, senderEmail string, em
 		orm.UserTableColumns.UserID,
 		orm.RelationshipTableColumns.ReceiverID,
 		orm.RelationshipTableColumns.SenderID,
+		sender.UserID,
 		orm.UserTableColumns.UserEmail,
+		inClauseBuilder.String(),
 		orm.RelationshipTableColumns.Status,
 		orm.SubscriptionStatusRBlockedS,
 	)
 
 	var finalUsers model.UserSlice
-	err = orm.NewQuery(qm.SQL(query, inClauseBuilder.String(), sender.UserID)).Bind(ctx, i.dbConn, &finalUsers)
+	err := orm.NewQuery(qm.SQL(query)).Bind(ctx, i.dbConn, &finalUsers)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
 		return nil, err
 	}
 

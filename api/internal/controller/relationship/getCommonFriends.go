@@ -27,7 +27,9 @@ func (i impl) GetCommonFriends(ctx context.Context, email1 string, email2 string
 	if err != nil {
 		return nil, err
 	}
-	var commonFriendsEmail []string
+
+	// This goes against convention but is beneficial for the JSON stage.
+	commonFriendsEmail := []string{}
 
 	hash := make(map[string]bool)
 	for _, friend := range user1Friends {

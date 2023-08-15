@@ -42,7 +42,8 @@ func (i impl) GetReceivers(ctx context.Context, senderEmail string, text string)
 		return nil, err
 	}
 
-	var receiversEmail []string
+	// This goes against convention but is beneficial for the JSON stage.
+	receiversEmail := []string{}
 
 	// Removing duplicates
 	hash := make(map[string]bool)

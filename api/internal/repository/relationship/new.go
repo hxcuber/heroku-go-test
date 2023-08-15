@@ -11,6 +11,7 @@ type Repository interface {
 	GetSubscribers(ctx context.Context, sender model.User) (model.UserSlice, error)
 	GetReceiversFromEmails(ctx context.Context, sender model.User, emails []string) (model.UserSlice, error)
 	GetUserByEmail(ctx context.Context, email string) (model.User, error)
+	CreateBlock(ctx context.Context, sender model.User, receiver model.User) error
 }
 
 type impl struct {

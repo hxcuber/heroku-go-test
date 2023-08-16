@@ -23,5 +23,9 @@ func (req *Request) Bind(r *http.Request) error {
 		return err
 	}
 
+	if req.Requestor == req.Target {
+		return errors.New("emails cannot be the same")
+	}
+
 	return nil
 }

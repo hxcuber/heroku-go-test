@@ -7,7 +7,7 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
-func (i impl) CreateConnection(ctx context.Context, user1 model.User, user2 model.User) (bool, error) {
+func (i impl) CreateConnection(ctx context.Context, user1 model.User, user2 model.User) error {
 	rela1to2 := &orm.Relationship{
 		SenderID:   user1.UserID,
 		ReceiverID: user2.UserID,
@@ -26,13 +26,13 @@ func (i impl) CreateConnection(ctx context.Context, user1 model.User, user2 mode
 
 	err := rela1to2.Upsert(ctx, i.dbConn, true, conflictColumns, updateColumns, insertColumns)
 	if err != nil {
-		return false, err
+		return err
 	}
 
 	err = rela2to1.Upsert(ctx, i.dbConn, true, conflictColumns, updateColumns, insertColumns)
 	if err != nil {
-		return false, err
+		return err
 	}
 
-	return rela1to2.Status != "" || rela2to1.Status != "", nil
+	return nil
 }

@@ -3,5 +3,15 @@ package util
 import "strings"
 
 func IsEmail(s string) bool {
-	return strings.Index(s, "@") != -1
+	partsAt := strings.Split(s, "@")
+	if len(partsAt) != 2 {
+		return false
+	}
+
+	partsDot := strings.Split(partsAt[1], ".")
+	if len(partsDot) != 2 {
+		return false
+	}
+
+	return true
 }

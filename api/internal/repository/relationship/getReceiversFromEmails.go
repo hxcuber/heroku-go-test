@@ -2,6 +2,8 @@ package relationship
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/hxcuber/friends-management/api/internal/controller/model"
 	"github.com/hxcuber/friends-management/api/internal/repository/orm"
@@ -58,6 +60,9 @@ func (i impl) GetReceiversFromEmails(ctx context.Context, sender model.User, ema
 	var finalUsers model.UserSlice
 	err := orm.NewQuery(qm.SQL(query)).Bind(ctx, i.dbConn, &finalUsers)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
 		return nil, err
 	}
 

@@ -20,6 +20,9 @@ func (req *Request) Bind(r *http.Request) error {
 				return err
 			}
 		}
+		if req.Friends[0] == req.Friends[1] {
+			return errors.New("emails cannot be the same\n")
+		}
 		return nil
 	}
 	return errors.New("unknown error\n")

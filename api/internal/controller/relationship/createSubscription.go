@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (i impl) PostCreateSubscription(ctx context.Context, requestorEmail string, targetEmail string) error {
+func (i impl) CreateSubscription(ctx context.Context, requestorEmail string, targetEmail string) error {
 	return i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
 		sender, err := txRepo.Relationship().GetUserByEmail(ctx, targetEmail)
 		if err != nil {
@@ -26,13 +26,13 @@ func (i impl) PostCreateSubscription(ctx context.Context, requestorEmail string,
 			if !errors.Is(err, sql.ErrNoRows) {
 				return err
 			}
-			return txRepo.Relationship().CreateSubscription(ctx, sender, receiver)
+			return txRepo.Relationship().UpsertSubscription(ctx, sender, receiver)
 		}
 
 		if relationship.Status == orm.SubscriptionStatusRSubscribedS {
 			return controller.ErrAlreadyCreated
 		}
 
-		return txRepo.Relationship().CreateSubscription(ctx, sender, receiver)
+		return txRepo.Relationship().UpsertSubscription(ctx, sender, receiver)
 	}, nil)
 }

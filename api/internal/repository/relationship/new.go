@@ -12,7 +12,7 @@ type Repository interface {
 	GetReceiversFromEmails(ctx context.Context, sender model.User, emails []string) (model.UserSlice, error)
 	GetUserByEmail(ctx context.Context, email string) (model.User, error)
 	FindRelationship(ctx context.Context, user1 model.User, user2 model.User) (model.Relationship, error)
-	CreateSubscription(ctx context.Context, sender model.User, receiver model.User) error
+	UpsertSubscription(ctx context.Context, sender model.User, receiver model.User) error
 	CreateConnection(ctx context.Context, user1 model.User, user2 model.User) error
 }
 

@@ -10,8 +10,8 @@ type Controller interface {
 	GetCommonFriends(ctx context.Context, email1 string, email2 string) ([]string, error)
 	GetReceivers(ctx context.Context, email string, text string) ([]string, error)
 	CreateConnection(ctx context.Context, email1 string, email2 string) error
-	PutCreateSubscription(ctx context.Context, requestorEmail string, targetEmail string) error
-	PostCreateSubscription(ctx context.Context, requestorEmail string, targetEmail string) error
+	UpdateSubscription(ctx context.Context, requestorEmail string, targetEmail string) error
+	CreateSubscription(ctx context.Context, requestorEmail string, targetEmail string) error
 }
 
 type impl struct {

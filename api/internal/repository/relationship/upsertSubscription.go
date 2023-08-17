@@ -7,7 +7,7 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
-func (i impl) CreateSubscription(ctx context.Context, sender model.User, receiver model.User) error {
+func (i impl) UpsertSubscription(ctx context.Context, sender model.User, receiver model.User) error {
 	rela := &orm.Relationship{
 		SenderID:   sender.UserID,
 		ReceiverID: receiver.UserID,

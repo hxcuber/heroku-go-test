@@ -15,7 +15,7 @@ func (h Handler) PutCreateSubscription() http.HandlerFunc {
 			return err, http.StatusBadRequest
 		}
 
-		err := h.ctrl.PutCreateSubscription(r.Context(), request.Requestor, request.Target)
+		err := h.ctrl.UpdateSubscription(r.Context(), request.Requestor, request.Target)
 		if err != nil {
 			return err, http.StatusInternalServerError
 		}

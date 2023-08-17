@@ -25,14 +25,13 @@ func (i impl) CreateConnection(ctx context.Context, email1 string, email2 string
 			if !errors.Is(err, sql.ErrNoRows) {
 				return err
 			}
+			return txRepo.Relationship().CreateConnection(ctx, user1, user2)
 		}
 
 		if relationship.Friends == true {
 			return controller.ErrAlreadyCreated
 		}
 
-		err = txRepo.Relationship().CreateConnection(ctx, user1, user2)
-
-		return err
+		return txRepo.Relationship().CreateConnection(ctx, user1, user2)
 	}, nil)
 }

@@ -3,10 +3,10 @@ package relationship
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"github.com/hxcuber/friends-management/api/internal/controller/model"
 	"github.com/hxcuber/friends-management/api/internal/repository/orm"
+	"github.com/pkg/errors"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 

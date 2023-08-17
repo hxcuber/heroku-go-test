@@ -1,5 +1,5 @@
 package controller
 
-import "errors"
+import "github.com/pkg/errors"
 
 var ErrAlreadyCreated = errors.New("resource already created")

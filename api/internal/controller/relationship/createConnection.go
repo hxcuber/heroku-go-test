@@ -3,9 +3,9 @@ package relationship
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"github.com/hxcuber/friends-management/api/internal/controller"
 	"github.com/hxcuber/friends-management/api/internal/repository"
+	"github.com/pkg/errors"
 )
 
 func (i impl) CreateConnection(ctx context.Context, email1 string, email2 string) error {
@@ -21,7 +21,6 @@ func (i impl) CreateConnection(ctx context.Context, email1 string, email2 string
 		}
 
 		relationship, err := txRepo.Relationship().FindRelationship(ctx, user1, user2)
-
 		if err != nil {
 			if !errors.Is(err, sql.ErrNoRows) {
 				return err

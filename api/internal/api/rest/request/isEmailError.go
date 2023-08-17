@@ -1,9 +1,9 @@
 package request
 
 import (
-	"errors"
 	"fmt"
 	"github.com/hxcuber/friends-management/api/pkg/util"
+	"github.com/pkg/errors"
 )
 
 func IsEmailError(s string, fieldName string) error {

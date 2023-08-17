@@ -12,6 +12,8 @@ type Controller interface {
 	CreateBlock(ctx context.Context, requestorEmail string, targetEmail string) error
 	UpdateBlock(ctx context.Context, requestorEmail string, targetEmail string) error
 	CreateConnection(ctx context.Context, email1 string, email2 string) error
+	UpdateSubscription(ctx context.Context, requestorEmail string, targetEmail string) error
+	CreateSubscription(ctx context.Context, requestorEmail string, targetEmail string) error
 }
 
 type impl struct {

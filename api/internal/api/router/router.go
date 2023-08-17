@@ -37,7 +37,11 @@ func (rtr Router) Handler() http.Handler {
 	r.Route("/create", func(r chi.Router) {
 		r.Post("/block", rtr.relationshipRESTHandler.CreateBlock())
 		r.Put("/block", rtr.relationshipRESTHandler.UpdateBlock())
-		r.Post("/connection", rtr.relationshipRESTHandler.PostCreateConnection())
+
+		r.Post("/subscription", rtr.relationshipRESTHandler.CreateSubscription())
+		r.Put("/subscription", rtr.relationshipRESTHandler.UpdateSubscription())
+
+		r.Post("/connection", rtr.relationshipRESTHandler.CreateConnection())
 	})
 	return r
 }

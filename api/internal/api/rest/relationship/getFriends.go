@@ -21,11 +21,6 @@ func (h Handler) GetFriends() http.HandlerFunc {
 			return err, http.StatusInternalServerError
 		}
 
-		// purely for JSON conversion purposes
-		if list == nil {
-			list = []string{}
-		}
-
 		if err = render.Render(w, r, listWithCount.New(list, http.StatusOK)); err != nil {
 			return err, http.StatusInternalServerError
 		}

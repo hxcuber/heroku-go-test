@@ -2,8 +2,8 @@ package httpserv
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"github.com/pkg/errors"
 	"net/http"
 	"os"
 	"time"

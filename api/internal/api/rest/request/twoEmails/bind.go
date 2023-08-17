@@ -1,8 +1,8 @@
 package twoEmails
 
 import (
-	"errors"
 	"github.com/hxcuber/friends-management/api/internal/api/rest/request"
+	"github.com/pkg/errors"
 	"net/http"
 )
 
@@ -19,6 +19,9 @@ func (req *Request) Bind(r *http.Request) error {
 			if err := request.IsEmailError(e, "elements of friends"); err != nil {
 				return err
 			}
+		}
+		if req.Friends[0] == req.Friends[1] {
+			return errors.New("emails cannot be the same\n")
 		}
 		return nil
 	}

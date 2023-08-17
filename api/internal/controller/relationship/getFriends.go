@@ -21,7 +21,9 @@ func (i impl) GetFriends(ctx context.Context, email string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	var friendsEmail []string
+
+	// This goes against convention but is beneficial for the JSON stage.
+	friendsEmail := []string{}
 
 	for _, friend := range friends {
 		friendsEmail = append(friendsEmail, friend.UserEmail)

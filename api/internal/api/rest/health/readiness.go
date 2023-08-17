@@ -2,7 +2,7 @@ package health
 
 import (
 	"context"
-	"errors"
+	"github.com/pkg/errors"
 	"net/http"
 
 	"github.com/hxcuber/friends-management/api/pkg/httpserv"

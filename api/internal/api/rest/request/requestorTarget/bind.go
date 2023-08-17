@@ -1,8 +1,8 @@
 package requestorTarget
 
 import (
-	"errors"
 	"github.com/hxcuber/friends-management/api/internal/api/rest/request"
+	"github.com/pkg/errors"
 	"net/http"
 )
 
@@ -21,6 +21,10 @@ func (req *Request) Bind(r *http.Request) error {
 
 	if err := request.IsEmailError(req.Target, "target"); err != nil {
 		return err
+	}
+
+	if req.Requestor == req.Target {
+		return errors.New("emails cannot be the same")
 	}
 
 	return nil

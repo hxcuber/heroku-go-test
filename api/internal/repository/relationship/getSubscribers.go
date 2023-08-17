@@ -2,9 +2,11 @@ package relationship
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"github.com/hxcuber/friends-management/api/internal/controller/model"
 	"github.com/hxcuber/friends-management/api/internal/repository/orm"
+	"github.com/pkg/errors"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
@@ -24,6 +26,9 @@ func (i impl) GetSubscribers(ctx context.Context, sender model.User) (model.User
 					orm.RelationshipWhere.Status.EQ(orm.SubscriptionStatusNone)))),
 	).Bind(ctx, i.dbConn, &subscriberList)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return subscriberList, nil

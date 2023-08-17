@@ -8,14 +8,14 @@ import (
 	"net/http"
 )
 
-func (h Handler) CreateSubscription() http.HandlerFunc {
+func (h Handler) PutCreateSubscription() http.HandlerFunc {
 	return rest.ErrorHandler(func(w http.ResponseWriter, r *http.Request) (error, int) {
 		var request requestorTarget.Request
 		if err := render.Bind(r, &request); err != nil {
 			return err, http.StatusBadRequest
 		}
 
-		err := h.ctrl.CreateSubscription(r.Context(), request.Requestor, request.Target)
+		err := h.ctrl.PutCreateSubscription(r.Context(), request.Requestor, request.Target)
 		if err != nil {
 			return err, http.StatusInternalServerError
 		}

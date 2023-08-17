@@ -5,7 +5,7 @@ import (
 	"github.com/hxcuber/friends-management/api/internal/repository"
 )
 
-func (i impl) CreateSubscription(ctx context.Context, requestorEmail string, targetEmail string) error {
+func (i impl) PutCreateSubscription(ctx context.Context, requestorEmail string, targetEmail string) error {
 	return i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
 		sender, err := txRepo.Relationship().GetUserByEmail(ctx, targetEmail)
 		if err != nil {

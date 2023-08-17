@@ -3,6 +3,7 @@ package relationship
 import (
 	"context"
 	"database/sql"
+	"github.com/hxcuber/friends-management/api/internal/controller"
 	"github.com/hxcuber/friends-management/api/internal/repository"
 	"github.com/hxcuber/friends-management/api/internal/repository/orm"
 	"github.com/pkg/errors"
@@ -20,7 +21,7 @@ func (i impl) PostCreateSubscription(ctx context.Context, requestorEmail string,
 			return err
 		}
 
-		relationship, err := txRepo.Relationship.FindRelationship(ctx, sender, receiver)
+		relationship, err := txRepo.Relationship().FindRelationship(ctx, sender, receiver)
 		if err != nil {
 			if !errors.Is(err, sql.ErrNoRows) {
 				return err

@@ -1,8 +1,8 @@
 package twoEmails
 
 import (
-	"errors"
 	"github.com/hxcuber/friends-management/api/internal/api/rest/request"
+	"github.com/pkg/errors"
 	"net/http"
 )
 

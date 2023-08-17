@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func (h Handler) PostCreateConnection() http.HandlerFunc {
+func (h Handler) CreateConnection() http.HandlerFunc {
 	return rest.ErrorHandler(func(w http.ResponseWriter, r *http.Request) (error, int) {
 		var request twoEmails.Request
 

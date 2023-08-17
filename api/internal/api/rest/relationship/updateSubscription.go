@@ -5,23 +5,18 @@ import (
 	"github.com/hxcuber/friends-management/api/internal/api/rest"
 	"github.com/hxcuber/friends-management/api/internal/api/rest/request/requestorTarget"
 	"github.com/hxcuber/friends-management/api/internal/api/rest/response/basicSuccess"
-	"github.com/hxcuber/friends-management/api/internal/controller"
-	"github.com/pkg/errors"
 	"net/http"
 )
 
-func (h Handler) PostCreateSubscription() http.HandlerFunc {
+func (h Handler) UpdateSubscription() http.HandlerFunc {
 	return rest.ErrorHandler(func(w http.ResponseWriter, r *http.Request) (error, int) {
 		var request requestorTarget.Request
 		if err := render.Bind(r, &request); err != nil {
 			return err, http.StatusBadRequest
 		}
 
-		err := h.ctrl.CreateSubscription(r.Context(), request.Requestor, request.Target)
+		err := h.ctrl.UpdateSubscription(r.Context(), request.Requestor, request.Target)
 		if err != nil {
-			if errors.Is(err, controller.ErrAlreadyCreated) {
-				return errors.Wrap(err, "subscription"), http.StatusConflict
-			}
 			return err, http.StatusInternalServerError
 		}
 

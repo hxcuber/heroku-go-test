@@ -35,9 +35,9 @@ func (rtr Router) Handler() http.Handler {
 	r.Get("/notification-receivers", rtr.relationshipRESTHandler.GetReceivers())
 	r.Get("/_/ready", rtr.healthRESTHandler.CheckReadiness())
 	r.Route("/create", func(r chi.Router) {
-		r.Put("/subscription", rtr.relationshipRESTHandler.PutCreateSubscription())
-		r.Post("/subscription", rtr.relationshipRESTHandler.PostCreateSubscription())
-		r.Post("/connection", rtr.relationshipRESTHandler.PostCreateConnection())
+		r.Put("/subscription", rtr.relationshipRESTHandler.UpdateSubscription())
+		r.Post("/subscription", rtr.relationshipRESTHandler.CreateSubscription())
+		r.Post("/connection", rtr.relationshipRESTHandler.CreateConnection())
 	})
 	return r
 }

@@ -7,7 +7,7 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
-func (i impl) CreateBlock(ctx context.Context, sender model.User, receiver model.User) error {
+func (i impl) UpsertBlock(ctx context.Context, sender model.User, receiver model.User) error {
 	rela := &orm.Relationship{
 		SenderID:   sender.UserID,
 		ReceiverID: receiver.UserID,

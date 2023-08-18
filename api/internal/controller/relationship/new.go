@@ -9,6 +9,8 @@ type Controller interface {
 	GetFriends(ctx context.Context, email string) ([]string, error)
 	GetCommonFriends(ctx context.Context, email1 string, email2 string) ([]string, error)
 	GetReceivers(ctx context.Context, email string, text string) ([]string, error)
+	CreateBlock(ctx context.Context, requestorEmail string, targetEmail string) error
+	UpdateBlock(ctx context.Context, requestorEmail string, targetEmail string) error
 	CreateConnection(ctx context.Context, email1 string, email2 string) error
 	UpdateSubscription(ctx context.Context, requestorEmail string, targetEmail string) error
 	CreateSubscription(ctx context.Context, requestorEmail string, targetEmail string) error

@@ -7,8 +7,8 @@ import (
 )
 
 func (i impl) GetCommonFriends(ctx context.Context, email1 string, email2 string) ([]string, error) {
-	var user1Friends model.UserSlice
-	var user2Friends model.UserSlice
+	var user1Friends model.Users
+	var user2Friends model.Users
 	err := i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
 		user1, err := txRepo.Relationship().GetUserByEmail(ctx, email1)
 		if err != nil {

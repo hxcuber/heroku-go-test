@@ -19,8 +19,8 @@ func (i impl) GetReceivers(ctx context.Context, senderEmail string, text string)
 		}
 	}
 
-	var validUsersMentioned model.UserSlice
-	var subscribers model.UserSlice
+	var validUsersMentioned model.Users
+	var subscribers model.Users
 	err := i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
 		sender, err := txRepo.Relationship().GetUserByEmail(ctx, senderEmail)
 		if err != nil {

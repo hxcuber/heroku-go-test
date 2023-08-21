@@ -8,7 +8,7 @@ import (
 
 func (i impl) GetFriends(ctx context.Context, email string) ([]string, error) {
 
-	var friends model.UserSlice
+	var friends model.Users
 	err := i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
 		user, err := txRepo.Relationship().GetUserByEmail(ctx, email)
 		if err != nil {

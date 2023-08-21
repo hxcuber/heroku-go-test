@@ -23,9 +23,8 @@ import (
 
 // Relationship is an object representing the database table.
 type Relationship struct {
-	SenderID   int64  `boil:"sender_id" json:"sender_id" toml:"sender_id" yaml:"sender_id"`
 	ReceiverID int64  `boil:"receiver_id" json:"receiver_id" toml:"receiver_id" yaml:"receiver_id"`
-	Friends    bool   `boil:"friends" json:"friends" toml:"friends" yaml:"friends"`
+	SenderID   int64  `boil:"sender_id" json:"sender_id" toml:"sender_id" yaml:"sender_id"`
 	Status     string `boil:"status" json:"status" toml:"status" yaml:"status"`
 
 	R *relationshipR `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -33,26 +32,22 @@ type Relationship struct {
 }
 
 var RelationshipColumns = struct {
-	SenderID   string
 	ReceiverID string
-	Friends    string
+	SenderID   string
 	Status     string
 }{
-	SenderID:   "sender_id",
 	ReceiverID: "receiver_id",
-	Friends:    "friends",
+	SenderID:   "sender_id",
 	Status:     "status",
 }
 
 var RelationshipTableColumns = struct {
-	SenderID   string
 	ReceiverID string
-	Friends    string
+	SenderID   string
 	Status     string
 }{
-	SenderID:   "relationships.sender_id",
 	ReceiverID: "relationships.receiver_id",
-	Friends:    "relationships.friends",
+	SenderID:   "relationships.sender_id",
 	Status:     "relationships.status",
 }
 
@@ -81,15 +76,6 @@ func (w whereHelperint64) NIN(slice []int64) qm.QueryMod {
 	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
 }
 
-type whereHelperbool struct{ field string }
-
-func (w whereHelperbool) EQ(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
-func (w whereHelperbool) NEQ(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
-func (w whereHelperbool) LT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
-func (w whereHelperbool) LTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
-func (w whereHelperbool) GT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
-func (w whereHelperbool) GTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
-
 type whereHelperstring struct{ field string }
 
 func (w whereHelperstring) EQ(x string) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
@@ -114,14 +100,12 @@ func (w whereHelperstring) NIN(slice []string) qm.QueryMod {
 }
 
 var RelationshipWhere = struct {
-	SenderID   whereHelperint64
 	ReceiverID whereHelperint64
-	Friends    whereHelperbool
+	SenderID   whereHelperint64
 	Status     whereHelperstring
 }{
-	SenderID:   whereHelperint64{field: "\"relationships\".\"sender_id\""},
 	ReceiverID: whereHelperint64{field: "\"relationships\".\"receiver_id\""},
-	Friends:    whereHelperbool{field: "\"relationships\".\"friends\""},
+	SenderID:   whereHelperint64{field: "\"relationships\".\"sender_id\""},
 	Status:     whereHelperstring{field: "\"relationships\".\"status\""},
 }
 
@@ -163,8 +147,8 @@ func (r *relationshipR) GetSender() *User {
 type relationshipL struct{}
 
 var (
-	relationshipAllColumns            = []string{"sender_id", "receiver_id", "friends", "status"}
-	relationshipColumnsWithoutDefault = []string{"sender_id", "receiver_id", "friends", "status"}
+	relationshipAllColumns            = []string{"receiver_id", "sender_id", "status"}
+	relationshipColumnsWithoutDefault = []string{"receiver_id", "sender_id", "status"}
 	relationshipColumnsWithDefault    = []string{}
 	relationshipPrimaryKeyColumns     = []string{"sender_id", "receiver_id"}
 	relationshipGeneratedColumns      = []string{}

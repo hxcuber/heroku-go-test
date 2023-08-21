@@ -797,7 +797,7 @@ func testRelationshipsSelect(t *testing.T) {
 }
 
 var (
-	relationshipDBTypes = map[string]string{`SenderID`: `bigint`, `ReceiverID`: `bigint`, `Friends`: `boolean`, `Status`: `enum.subscription_status('r_blocked_s','r_subscribed_s','none')`}
+	relationshipDBTypes = map[string]string{`ReceiverID`: `bigint`, `SenderID`: `bigint`, `Status`: `enum.status('r_blocked_s','r_subscribed_s','friends')`}
 	_                   = bytes.MinRead
 )
 

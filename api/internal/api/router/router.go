@@ -31,17 +31,11 @@ func (rtr Router) Handler() http.Handler {
 	)
 
 	r.Get("/friends", rtr.relationshipRESTHandler.GetFriends())
-	r.Get("/commonFriends", rtr.relationshipRESTHandler.GetCommonFriends())
+	r.Get("/common-friends", rtr.relationshipRESTHandler.GetCommonFriends())
 	r.Get("/notification-receivers", rtr.relationshipRESTHandler.GetReceivers())
 	r.Get("/_/ready", rtr.healthRESTHandler.CheckReadiness())
-	r.Route("/create", func(r chi.Router) {
-		r.Post("/block", rtr.relationshipRESTHandler.CreateBlock())
-		r.Put("/block", rtr.relationshipRESTHandler.UpdateBlock())
-
-		r.Post("/subscription", rtr.relationshipRESTHandler.CreateSubscription())
-		r.Put("/subscription", rtr.relationshipRESTHandler.UpdateSubscription())
-
-		r.Post("/connection", rtr.relationshipRESTHandler.CreateConnection())
-	})
+	r.Post("/block", rtr.relationshipRESTHandler.Block())
+	r.Post("/subscribe", rtr.relationshipRESTHandler.Subscribe())
+	r.Post("/befriend", rtr.relationshipRESTHandler.Befriend())
 	return r
 }

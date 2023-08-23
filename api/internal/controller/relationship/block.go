@@ -3,36 +3,41 @@ package relationship
 import (
 	"context"
 	"database/sql"
-	"github.com/hxcuber/friends-management/api/internal/controller"
 	"github.com/hxcuber/friends-management/api/internal/controller/model"
 	"github.com/hxcuber/friends-management/api/internal/repository"
 	"github.com/hxcuber/friends-management/api/internal/repository/orm"
 	"github.com/pkg/errors"
+	"log"
 )
 
 func (i impl) Block(ctx context.Context, requestorEmail string, targetEmail string) error {
-	return i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
+	err := i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
 		receiver, err := txRepo.Relationship().GetUserByEmail(ctx, requestorEmail)
 		if err != nil {
+			log.Printf(LogErrMessage("Block", "retrieving receiver by email %s", err, requestorEmail))
 			return err
 		}
 
 		sender, err := txRepo.Relationship().GetUserByEmail(ctx, targetEmail)
 		if err != nil {
+			log.Printf(LogErrMessage("Block", "retrieving sender by email %s", err, targetEmail))
 			return err
 		}
 
 		relaStoR, err := txRepo.Relationship().FindRelationship(ctx, sender, receiver)
 		if err != nil {
 			if !errors.Is(err, sql.ErrNoRows) {
+				log.Printf(LogErrMessage("Block", "retrieving relationship sender to receiver", err))
 				return err
 			}
 		} else {
 			if relaStoR.Status == orm.StatusRBlockedS {
-				return controller.ErrBlocked
+				log.Printf(LogErrMessage("Block", "controller logic", ErrBlocked))
+				return ErrBlocked
 			}
-			_, err = txRepo.Relationship().DeleteRelationship(ctx, *relaStoR)
+			err = txRepo.Relationship().DeleteRelationship(ctx, *relaStoR)
 			if err != nil {
+				log.Printf(LogErrMessage("Block", "deleting relationship sender to receiver", err))
 				return err
 			}
 		}
@@ -40,6 +45,7 @@ func (i impl) Block(ctx context.Context, requestorEmail string, targetEmail stri
 		relaRtoS, err := txRepo.Relationship().FindRelationship(ctx, receiver, sender)
 		if err != nil {
 			if !errors.Is(err, sql.ErrNoRows) {
+				log.Printf(LogErrMessage("Block", "retrieving relationship receiver to sender", err))
 				return err
 			}
 			relaRtoS = &model.Relationship{
@@ -48,17 +54,28 @@ func (i impl) Block(ctx context.Context, requestorEmail string, targetEmail stri
 				Status:     orm.StatusRBlockedS,
 			}
 			err = txRepo.Relationship().CreateRelationship(ctx, *relaRtoS)
+			if err != nil {
+				log.Printf(LogErrMessage("Block", "creating relationship receiver to sender", err))
+				return err
+			}
 		} else {
 			if relaRtoS.Status == orm.StatusRBlockedS {
-				return controller.ErrAlreadyCreated
+				log.Printf(LogErrMessage("Block", "controller logic", ErrAlreadyCreated))
+				return ErrAlreadyCreated
 			}
 			relaRtoS.Status = orm.StatusRBlockedS
-			_, err = txRepo.Relationship().UpdateRelationship(ctx, *relaRtoS)
-		}
-		if err != nil {
-			return err
+			err = txRepo.Relationship().UpdateRelationship(ctx, *relaRtoS)
+			if err != nil {
+				log.Printf(LogErrMessage("Block", "updating relationship receiver to sender", err))
+				return err
+			}
 		}
 
 		return nil
 	}, nil)
+	if err != nil {
+		log.Printf(LogErrMessage("Block", "doing in transaction", err))
+		return err
+	}
+	return nil
 }

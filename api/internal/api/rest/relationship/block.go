@@ -5,7 +5,7 @@ import (
 	"github.com/hxcuber/friends-management/api/internal/api/rest"
 	"github.com/hxcuber/friends-management/api/internal/api/rest/request/requestorTarget"
 	"github.com/hxcuber/friends-management/api/internal/api/rest/response/basicSuccess"
-	"github.com/hxcuber/friends-management/api/internal/controller"
+	"github.com/hxcuber/friends-management/api/internal/controller/relationship"
 	"github.com/pkg/errors"
 	"net/http"
 )
@@ -19,7 +19,7 @@ func (h Handler) Block() http.HandlerFunc {
 
 		err := h.ctrl.Block(r.Context(), request.Requestor, request.Target)
 		if err != nil {
-			if errors.Is(err, controller.ErrAlreadyCreated) {
+			if errors.Is(err, relationship.ErrAlreadyCreated) {
 				return errors.Wrap(err, "block"), http.StatusConflict
 			}
 			return err, http.StatusInternalServerError

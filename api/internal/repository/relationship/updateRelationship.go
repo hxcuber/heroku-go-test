@@ -6,6 +6,7 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
-func (i impl) UpdateRelationship(ctx context.Context, rela model.Relationship) (int64, error) {
-	return rela.Orm().Update(ctx, i.dbConn, boil.Blacklist())
+func (i impl) UpdateRelationship(ctx context.Context, rela model.Relationship) error {
+	_, err := rela.Orm().Update(ctx, i.dbConn, boil.Blacklist())
+	return err
 }

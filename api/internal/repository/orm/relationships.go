@@ -150,7 +150,7 @@ var (
 	relationshipAllColumns            = []string{"receiver_id", "sender_id", "status"}
 	relationshipColumnsWithoutDefault = []string{"receiver_id", "sender_id", "status"}
 	relationshipColumnsWithDefault    = []string{}
-	relationshipPrimaryKeyColumns     = []string{"sender_id", "receiver_id"}
+	relationshipPrimaryKeyColumns     = []string{"receiver_id", "sender_id"}
 	relationshipGeneratedColumns      = []string{}
 )
 
@@ -710,7 +710,7 @@ func (o *Relationship) SetReceiver(ctx context.Context, exec boil.ContextExecuto
 		strmangle.SetParamNames("\"", "\"", 1, []string{"receiver_id"}),
 		strmangle.WhereClause("\"", "\"", 2, relationshipPrimaryKeyColumns),
 	)
-	values := []interface{}{related.UserID, o.SenderID, o.ReceiverID}
+	values := []interface{}{related.UserID, o.ReceiverID, o.SenderID}
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -757,7 +757,7 @@ func (o *Relationship) SetSender(ctx context.Context, exec boil.ContextExecutor,
 		strmangle.SetParamNames("\"", "\"", 1, []string{"sender_id"}),
 		strmangle.WhereClause("\"", "\"", 2, relationshipPrimaryKeyColumns),
 	)
-	values := []interface{}{related.UserID, o.SenderID, o.ReceiverID}
+	values := []interface{}{related.UserID, o.ReceiverID, o.SenderID}
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -801,7 +801,7 @@ func Relationships(mods ...qm.QueryMod) relationshipQuery {
 
 // FindRelationship retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindRelationship(ctx context.Context, exec boil.ContextExecutor, senderID int64, receiverID int64, selectCols ...string) (*Relationship, error) {
+func FindRelationship(ctx context.Context, exec boil.ContextExecutor, receiverID int64, senderID int64, selectCols ...string) (*Relationship, error) {
 	relationshipObj := &Relationship{}
 
 	sel := "*"
@@ -809,10 +809,10 @@ func FindRelationship(ctx context.Context, exec boil.ContextExecutor, senderID i
 		sel = strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, selectCols), ",")
 	}
 	query := fmt.Sprintf(
-		"select %s from \"relationships\" where \"sender_id\"=$1 AND \"receiver_id\"=$2", sel,
+		"select %s from \"relationships\" where \"receiver_id\"=$1 AND \"sender_id\"=$2", sel,
 	)
 
-	q := queries.Raw(query, senderID, receiverID)
+	q := queries.Raw(query, receiverID, senderID)
 
 	err := q.Bind(ctx, exec, relationshipObj)
 	if err != nil {
@@ -1164,7 +1164,7 @@ func (o *Relationship) Delete(ctx context.Context, exec boil.ContextExecutor) (i
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), relationshipPrimaryKeyMapping)
-	sql := "DELETE FROM \"relationships\" WHERE \"sender_id\"=$1 AND \"receiver_id\"=$2"
+	sql := "DELETE FROM \"relationships\" WHERE \"receiver_id\"=$1 AND \"sender_id\"=$2"
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -1261,7 +1261,7 @@ func (o RelationshipSlice) DeleteAll(ctx context.Context, exec boil.ContextExecu
 // Reload refetches the object from the database
 // using the primary keys with an executor.
 func (o *Relationship) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindRelationship(ctx, exec, o.SenderID, o.ReceiverID)
+	ret, err := FindRelationship(ctx, exec, o.ReceiverID, o.SenderID)
 	if err != nil {
 		return err
 	}
@@ -1300,16 +1300,16 @@ func (o *RelationshipSlice) ReloadAll(ctx context.Context, exec boil.ContextExec
 }
 
 // RelationshipExists checks if the Relationship row exists.
-func RelationshipExists(ctx context.Context, exec boil.ContextExecutor, senderID int64, receiverID int64) (bool, error) {
+func RelationshipExists(ctx context.Context, exec boil.ContextExecutor, receiverID int64, senderID int64) (bool, error) {
 	var exists bool
-	sql := "select exists(select 1 from \"relationships\" where \"sender_id\"=$1 AND \"receiver_id\"=$2 limit 1)"
+	sql := "select exists(select 1 from \"relationships\" where \"receiver_id\"=$1 AND \"sender_id\"=$2 limit 1)"
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
 		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, senderID, receiverID)
+		fmt.Fprintln(writer, receiverID, senderID)
 	}
-	row := exec.QueryRowContext(ctx, sql, senderID, receiverID)
+	row := exec.QueryRowContext(ctx, sql, receiverID, senderID)
 
 	err := row.Scan(&exists)
 	if err != nil {
@@ -1321,5 +1321,5 @@ func RelationshipExists(ctx context.Context, exec boil.ContextExecutor, senderID
 
 // Exists checks if the Relationship row exists.
 func (o *Relationship) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
-	return RelationshipExists(ctx, exec, o.SenderID, o.ReceiverID)
+	return RelationshipExists(ctx, exec, o.ReceiverID, o.SenderID)
 }

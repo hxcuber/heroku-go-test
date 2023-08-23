@@ -13,8 +13,8 @@ type Repository interface {
 	GetUserByEmail(ctx context.Context, email string) (model.User, error)
 	CreateRelationship(ctx context.Context, rela model.Relationship) error
 	FindRelationship(ctx context.Context, receiver model.User, sender model.User) (*model.Relationship, error)
-	UpdateRelationship(ctx context.Context, rela model.Relationship) (int64, error)
-	DeleteRelationship(ctx context.Context, rela model.Relationship) (int64, error)
+	UpdateRelationship(ctx context.Context, rela model.Relationship) error
+	DeleteRelationship(ctx context.Context, rela model.Relationship) error
 }
 
 type impl struct {

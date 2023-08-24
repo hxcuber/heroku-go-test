@@ -5,12 +5,12 @@ import (
 	"github.com/hxcuber/friends-management/api/internal/api/rest"
 	"github.com/hxcuber/friends-management/api/internal/api/rest/request/twoEmails"
 	"github.com/hxcuber/friends-management/api/internal/api/rest/response/basicSuccess"
-	"github.com/hxcuber/friends-management/api/internal/controller"
+	"github.com/hxcuber/friends-management/api/internal/controller/relationship"
 	"github.com/pkg/errors"
 	"net/http"
 )
 
-func (h Handler) CreateConnection() http.HandlerFunc {
+func (h Handler) Befriend() http.HandlerFunc {
 	return rest.ErrorHandler(func(w http.ResponseWriter, r *http.Request) (error, int) {
 		var request twoEmails.Request
 
@@ -18,9 +18,9 @@ func (h Handler) CreateConnection() http.HandlerFunc {
 			return err, http.StatusBadRequest
 		}
 
-		err := h.ctrl.CreateConnection(r.Context(), request.Friends[0], request.Friends[1])
+		err := h.ctrl.Befriend(r.Context(), request.Friends[0], request.Friends[1])
 		if err != nil {
-			if errors.Is(err, controller.ErrAlreadyCreated) {
+			if errors.Is(err, relationship.ErrAlreadyCreated) {
 				return errors.Wrap(err, "friendship"), http.StatusConflict
 			}
 			return err, http.StatusInternalServerError

@@ -8,7 +8,7 @@ import (
 
 func (req *Request) Bind(r *http.Request) error {
 	if req.Sender == "" {
-		return errors.New("sender is a required field\n")
+		return errors.New("sender is a required field")
 	}
 	return request.IsEmailError(req.Sender, "sender")
 }

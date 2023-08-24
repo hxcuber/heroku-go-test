@@ -51,17 +51,17 @@ func makeCacheKey(cols boil.Columns, nzDefaults []string) string {
 	return str
 }
 
-// Enum values for SubscriptionStatus
+// Enum values for Status
 const (
-	SubscriptionStatusRBlockedS    string = "r_blocked_s"
-	SubscriptionStatusRSubscribedS string = "r_subscribed_s"
-	SubscriptionStatusNone         string = "none"
+	StatusRBlockedS    string = "r_blocked_s"
+	StatusRSubscribedS string = "r_subscribed_s"
+	StatusFriends      string = "friends"
 )
 
-func AllSubscriptionStatus() []string {
+func AllStatus() []string {
 	return []string{
-		SubscriptionStatusRBlockedS,
-		SubscriptionStatusRSubscribedS,
-		SubscriptionStatusNone,
+		StatusRBlockedS,
+		StatusRSubscribedS,
+		StatusFriends,
 	}
 }

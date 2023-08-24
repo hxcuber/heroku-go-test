@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func (i impl) GetReceiversFromEmails(ctx context.Context, sender model.User, emails []string) (model.UserSlice, error) {
+func (i impl) GetReceiversFromEmails(ctx context.Context, sender model.User, emails []string) (model.Users, error) {
 	var inClauseBuilder strings.Builder
 	inClauseBuilder.WriteString("(")
 	var emailsInterface []interface{}
@@ -54,10 +54,10 @@ func (i impl) GetReceiversFromEmails(ctx context.Context, sender model.User, ema
 		orm.UserTableColumns.UserEmail,
 		inClauseBuilder.String(),
 		orm.RelationshipTableColumns.Status,
-		orm.SubscriptionStatusRBlockedS,
+		orm.StatusRBlockedS,
 	)
 
-	var finalUsers model.UserSlice
+	var finalUsers model.Users
 	err := orm.NewQuery(qm.SQL(query)).Bind(ctx, i.dbConn, &finalUsers)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

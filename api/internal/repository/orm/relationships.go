@@ -23,9 +23,8 @@ import (
 
 // Relationship is an object representing the database table.
 type Relationship struct {
-	SenderID   int64  `boil:"sender_id" json:"sender_id" toml:"sender_id" yaml:"sender_id"`
 	ReceiverID int64  `boil:"receiver_id" json:"receiver_id" toml:"receiver_id" yaml:"receiver_id"`
-	Friends    bool   `boil:"friends" json:"friends" toml:"friends" yaml:"friends"`
+	SenderID   int64  `boil:"sender_id" json:"sender_id" toml:"sender_id" yaml:"sender_id"`
 	Status     string `boil:"status" json:"status" toml:"status" yaml:"status"`
 
 	R *relationshipR `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -33,26 +32,22 @@ type Relationship struct {
 }
 
 var RelationshipColumns = struct {
-	SenderID   string
 	ReceiverID string
-	Friends    string
+	SenderID   string
 	Status     string
 }{
-	SenderID:   "sender_id",
 	ReceiverID: "receiver_id",
-	Friends:    "friends",
+	SenderID:   "sender_id",
 	Status:     "status",
 }
 
 var RelationshipTableColumns = struct {
-	SenderID   string
 	ReceiverID string
-	Friends    string
+	SenderID   string
 	Status     string
 }{
-	SenderID:   "relationships.sender_id",
 	ReceiverID: "relationships.receiver_id",
-	Friends:    "relationships.friends",
+	SenderID:   "relationships.sender_id",
 	Status:     "relationships.status",
 }
 
@@ -81,15 +76,6 @@ func (w whereHelperint64) NIN(slice []int64) qm.QueryMod {
 	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
 }
 
-type whereHelperbool struct{ field string }
-
-func (w whereHelperbool) EQ(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
-func (w whereHelperbool) NEQ(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
-func (w whereHelperbool) LT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
-func (w whereHelperbool) LTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
-func (w whereHelperbool) GT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
-func (w whereHelperbool) GTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
-
 type whereHelperstring struct{ field string }
 
 func (w whereHelperstring) EQ(x string) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
@@ -114,14 +100,12 @@ func (w whereHelperstring) NIN(slice []string) qm.QueryMod {
 }
 
 var RelationshipWhere = struct {
-	SenderID   whereHelperint64
 	ReceiverID whereHelperint64
-	Friends    whereHelperbool
+	SenderID   whereHelperint64
 	Status     whereHelperstring
 }{
-	SenderID:   whereHelperint64{field: "\"relationships\".\"sender_id\""},
 	ReceiverID: whereHelperint64{field: "\"relationships\".\"receiver_id\""},
-	Friends:    whereHelperbool{field: "\"relationships\".\"friends\""},
+	SenderID:   whereHelperint64{field: "\"relationships\".\"sender_id\""},
 	Status:     whereHelperstring{field: "\"relationships\".\"status\""},
 }
 
@@ -163,10 +147,10 @@ func (r *relationshipR) GetSender() *User {
 type relationshipL struct{}
 
 var (
-	relationshipAllColumns            = []string{"sender_id", "receiver_id", "friends", "status"}
-	relationshipColumnsWithoutDefault = []string{"sender_id", "receiver_id", "friends", "status"}
+	relationshipAllColumns            = []string{"receiver_id", "sender_id", "status"}
+	relationshipColumnsWithoutDefault = []string{"receiver_id", "sender_id", "status"}
 	relationshipColumnsWithDefault    = []string{}
-	relationshipPrimaryKeyColumns     = []string{"sender_id", "receiver_id"}
+	relationshipPrimaryKeyColumns     = []string{"receiver_id", "sender_id"}
 	relationshipGeneratedColumns      = []string{}
 )
 
@@ -726,7 +710,7 @@ func (o *Relationship) SetReceiver(ctx context.Context, exec boil.ContextExecuto
 		strmangle.SetParamNames("\"", "\"", 1, []string{"receiver_id"}),
 		strmangle.WhereClause("\"", "\"", 2, relationshipPrimaryKeyColumns),
 	)
-	values := []interface{}{related.UserID, o.SenderID, o.ReceiverID}
+	values := []interface{}{related.UserID, o.ReceiverID, o.SenderID}
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -773,7 +757,7 @@ func (o *Relationship) SetSender(ctx context.Context, exec boil.ContextExecutor,
 		strmangle.SetParamNames("\"", "\"", 1, []string{"sender_id"}),
 		strmangle.WhereClause("\"", "\"", 2, relationshipPrimaryKeyColumns),
 	)
-	values := []interface{}{related.UserID, o.SenderID, o.ReceiverID}
+	values := []interface{}{related.UserID, o.ReceiverID, o.SenderID}
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -817,7 +801,7 @@ func Relationships(mods ...qm.QueryMod) relationshipQuery {
 
 // FindRelationship retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindRelationship(ctx context.Context, exec boil.ContextExecutor, senderID int64, receiverID int64, selectCols ...string) (*Relationship, error) {
+func FindRelationship(ctx context.Context, exec boil.ContextExecutor, receiverID int64, senderID int64, selectCols ...string) (*Relationship, error) {
 	relationshipObj := &Relationship{}
 
 	sel := "*"
@@ -825,10 +809,10 @@ func FindRelationship(ctx context.Context, exec boil.ContextExecutor, senderID i
 		sel = strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, selectCols), ",")
 	}
 	query := fmt.Sprintf(
-		"select %s from \"relationships\" where \"sender_id\"=$1 AND \"receiver_id\"=$2", sel,
+		"select %s from \"relationships\" where \"receiver_id\"=$1 AND \"sender_id\"=$2", sel,
 	)
 
-	q := queries.Raw(query, senderID, receiverID)
+	q := queries.Raw(query, receiverID, senderID)
 
 	err := q.Bind(ctx, exec, relationshipObj)
 	if err != nil {
@@ -1180,7 +1164,7 @@ func (o *Relationship) Delete(ctx context.Context, exec boil.ContextExecutor) (i
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), relationshipPrimaryKeyMapping)
-	sql := "DELETE FROM \"relationships\" WHERE \"sender_id\"=$1 AND \"receiver_id\"=$2"
+	sql := "DELETE FROM \"relationships\" WHERE \"receiver_id\"=$1 AND \"sender_id\"=$2"
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -1277,7 +1261,7 @@ func (o RelationshipSlice) DeleteAll(ctx context.Context, exec boil.ContextExecu
 // Reload refetches the object from the database
 // using the primary keys with an executor.
 func (o *Relationship) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindRelationship(ctx, exec, o.SenderID, o.ReceiverID)
+	ret, err := FindRelationship(ctx, exec, o.ReceiverID, o.SenderID)
 	if err != nil {
 		return err
 	}
@@ -1316,16 +1300,16 @@ func (o *RelationshipSlice) ReloadAll(ctx context.Context, exec boil.ContextExec
 }
 
 // RelationshipExists checks if the Relationship row exists.
-func RelationshipExists(ctx context.Context, exec boil.ContextExecutor, senderID int64, receiverID int64) (bool, error) {
+func RelationshipExists(ctx context.Context, exec boil.ContextExecutor, receiverID int64, senderID int64) (bool, error) {
 	var exists bool
-	sql := "select exists(select 1 from \"relationships\" where \"sender_id\"=$1 AND \"receiver_id\"=$2 limit 1)"
+	sql := "select exists(select 1 from \"relationships\" where \"receiver_id\"=$1 AND \"sender_id\"=$2 limit 1)"
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
 		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, senderID, receiverID)
+		fmt.Fprintln(writer, receiverID, senderID)
 	}
-	row := exec.QueryRowContext(ctx, sql, senderID, receiverID)
+	row := exec.QueryRowContext(ctx, sql, receiverID, senderID)
 
 	err := row.Scan(&exists)
 	if err != nil {
@@ -1337,5 +1321,5 @@ func RelationshipExists(ctx context.Context, exec boil.ContextExecutor, senderID
 
 // Exists checks if the Relationship row exists.
 func (o *Relationship) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
-	return RelationshipExists(ctx, exec, o.SenderID, o.ReceiverID)
+	return RelationshipExists(ctx, exec, o.ReceiverID, o.SenderID)
 }

@@ -3,24 +3,25 @@ package relationship
 import (
 	"github.com/go-chi/render"
 	"github.com/hxcuber/friends-management/api/internal/api/rest"
-	"github.com/hxcuber/friends-management/api/internal/api/rest/request/requestorTarget"
-	"github.com/hxcuber/friends-management/api/internal/api/rest/response/basicSuccess"
+	"github.com/hxcuber/friends-management/api/internal/api/rest/request/email"
+	"github.com/hxcuber/friends-management/api/internal/api/rest/response/listWithCount"
 	"net/http"
 )
 
-func (h Handler) UpdateSubscription() http.HandlerFunc {
+func (h Handler) Friends() http.HandlerFunc {
 	return rest.ErrorHandler(func(w http.ResponseWriter, r *http.Request) (error, int) {
-		var request requestorTarget.Request
+		var request email.Request
+
 		if err := render.Bind(r, &request); err != nil {
 			return err, http.StatusBadRequest
 		}
 
-		err := h.ctrl.UpdateSubscription(r.Context(), request.Requestor, request.Target)
+		list, err := h.ctrl.Friends(r.Context(), request.Email)
 		if err != nil {
 			return err, http.StatusInternalServerError
 		}
 
-		if err = render.Render(w, r, basicSuccess.New(http.StatusOK)); err != nil {
+		if err = render.Render(w, r, listWithCount.New(list, http.StatusOK)); err != nil {
 			return err, http.StatusInternalServerError
 		}
 

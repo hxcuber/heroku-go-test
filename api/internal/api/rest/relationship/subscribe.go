@@ -6,6 +6,7 @@ import (
 	"github.com/hxcuber/friends-management/api/internal/api/rest/request/requestorTarget"
 	"github.com/hxcuber/friends-management/api/internal/api/rest/response/basicSuccess"
 	"github.com/hxcuber/friends-management/api/internal/controller/relationship"
+	"github.com/hxcuber/friends-management/api/internal/repository/user"
 	"github.com/pkg/errors"
 	"net/http"
 )
@@ -19,6 +20,9 @@ func (h Handler) Subscribe() http.HandlerFunc {
 
 		err := h.ctrl.Subscribe(r.Context(), request.Requestor, request.Target)
 		if err != nil {
+			if errors.Is(err, user.ErrEmailNotFound) {
+				return err, http.StatusNotFound
+			}
 			if errors.Is(err, relationship.ErrAlreadyCreated) {
 				return errors.Wrap(err, "subscription"), http.StatusConflict
 			}

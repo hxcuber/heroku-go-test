@@ -6,7 +6,6 @@ import (
 )
 
 type Controller interface {
-	CreateUserByEmail(ctx context.Context, email string) error
 	Friends(ctx context.Context, email string) ([]string, error)
 	CommonFriends(ctx context.Context, email1 string, email2 string) ([]string, error)
 	Receivers(ctx context.Context, email string, text string) ([]string, error)

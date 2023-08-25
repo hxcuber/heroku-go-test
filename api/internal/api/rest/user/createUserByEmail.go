@@ -1,4 +1,4 @@
-package relationship
+package user
 
 import (
 	"github.com/go-chi/render"

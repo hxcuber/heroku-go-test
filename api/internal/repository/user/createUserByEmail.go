@@ -1,4 +1,4 @@
-package relationship
+package user
 
 import (
 	"context"
@@ -8,7 +8,6 @@ import (
 
 func (i impl) CreateUserByEmail(ctx context.Context, email string) error {
 	newUser := &orm.User{
-		UserID:    0,
 		UserEmail: email,
 	}
 

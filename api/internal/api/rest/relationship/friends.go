@@ -5,6 +5,8 @@ import (
 	"github.com/hxcuber/friends-management/api/internal/api/rest"
 	"github.com/hxcuber/friends-management/api/internal/api/rest/request/email"
 	"github.com/hxcuber/friends-management/api/internal/api/rest/response/listWithCount"
+	"github.com/hxcuber/friends-management/api/internal/repository/user"
+	"github.com/pkg/errors"
 	"net/http"
 )
 
@@ -18,6 +20,9 @@ func (h Handler) Friends() http.HandlerFunc {
 
 		list, err := h.ctrl.Friends(r.Context(), request.Email)
 		if err != nil {
+			if errors.Is(err, user.ErrEmailNotFound) {
+				return err, http.StatusNotFound
+			}
 			return err, http.StatusInternalServerError
 		}
 

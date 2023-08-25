@@ -6,6 +6,7 @@ import (
 	"github.com/hxcuber/friends-management/api/internal/api/rest/request/twoEmails"
 	"github.com/hxcuber/friends-management/api/internal/api/rest/response/basicSuccess"
 	"github.com/hxcuber/friends-management/api/internal/controller/relationship"
+	"github.com/hxcuber/friends-management/api/internal/repository/user"
 	"github.com/pkg/errors"
 	"net/http"
 )
@@ -20,6 +21,9 @@ func (h Handler) Befriend() http.HandlerFunc {
 
 		err := h.ctrl.Befriend(r.Context(), request.Friends[0], request.Friends[1])
 		if err != nil {
+			if errors.Is(err, user.ErrEmailNotFound) {
+				return err, http.StatusNotFound
+			}
 			if errors.Is(err, relationship.ErrAlreadyCreated) {
 				return errors.Wrap(err, "friendship"), http.StatusConflict
 			}

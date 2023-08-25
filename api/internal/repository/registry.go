@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/hxcuber/friends-management/api/internal/repository/relationship"
 	"github.com/hxcuber/friends-management/api/internal/repository/system"
+	"github.com/hxcuber/friends-management/api/internal/repository/user"
 	"time"
 
 	"github.com/hxcuber/friends-management/api/pkg/db/pg"
@@ -16,6 +17,8 @@ import (
 type Registry interface {
 	// System returns the system repo
 	System() system.Repository
+	// User returns the user repo
+	User() user.Repository
 	// Relationship returns the relationship repo
 	Relationship() relationship.Repository
 	// DoInTx wraps operations within a db tx
@@ -27,6 +30,7 @@ func New(dbConn pg.BeginnerExecutor) Registry {
 	return impl{
 		dbConn:       dbConn,
 		system:       system.New(dbConn),
+		user:         user.New(dbConn),
 		relationship: relationship.New(dbConn),
 	}
 }
@@ -35,12 +39,17 @@ type impl struct {
 	dbConn       pg.BeginnerExecutor // Only used to start DB txns
 	tx           pg.ContextExecutor  // Only used to keep track if txn has already been started to prevent devs from accidentally creating nested txns
 	system       system.Repository
+	user         user.Repository
 	relationship relationship.Repository
 }
 
 // System returns the system repo
 func (i impl) System() system.Repository {
 	return i.system
+}
+
+func (i impl) User() user.Repository {
+	return i.user
 }
 
 func (i impl) Relationship() relationship.Repository {
@@ -61,6 +70,7 @@ func (i impl) DoInTx(ctx context.Context, txFunc func(ctx context.Context, txRep
 		newI := impl{
 			tx:           tx,
 			system:       system.New(tx),
+			user:         user.New(tx),
 			relationship: relationship.New(tx),
 		}
 		return txFunc(ctx, newI)

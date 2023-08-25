@@ -6,6 +6,7 @@ import (
 	"github.com/hxcuber/friends-management/api/internal/api/router"
 	relationshipController "github.com/hxcuber/friends-management/api/internal/controller/relationship"
 	systemController "github.com/hxcuber/friends-management/api/internal/controller/system"
+	userController "github.com/hxcuber/friends-management/api/internal/controller/user"
 	"github.com/hxcuber/friends-management/api/internal/repository"
 	"github.com/hxcuber/friends-management/api/pkg/db/pg"
 	"github.com/hxcuber/friends-management/api/pkg/httpserv"
@@ -70,6 +71,7 @@ func initRouter(
 		strings.Split(os.Getenv("CORS_ALLOWED_ORIGINS"), ","),
 		os.Getenv("GQL_INTROSPECTION_ENABLED") == "true",
 		systemController.New(registry),
+		userController.New(registry),
 		relationshipController.New(registry),
 	), nil
 }

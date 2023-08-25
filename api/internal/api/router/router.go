@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/render"
 	"github.com/hxcuber/friends-management/api/internal/api/rest/health"
 	"github.com/hxcuber/friends-management/api/internal/api/rest/relationship"
+	"github.com/hxcuber/friends-management/api/internal/api/rest/user"
 	"net/http"
 )
 
@@ -16,6 +17,7 @@ type Router struct {
 	corsOrigins             []string
 	isGQLIntrospectionOn    bool
 	healthRESTHandler       health.Handler
+	userRESTHandler         user.Handler
 	relationshipRESTHandler relationship.Handler
 }
 
@@ -35,6 +37,7 @@ func (rtr Router) Handler() http.Handler {
 	r.Get("/common-friends", rtr.relationshipRESTHandler.CommonFriends())
 	r.Get("/notification-receivers", rtr.relationshipRESTHandler.Receivers())
 	r.Get("/_/ready", rtr.healthRESTHandler.CheckReadiness())
+	r.Post("/user", rtr.userRESTHandler.CreateUserByEmail())
 	r.Post("/block", rtr.relationshipRESTHandler.Block())
 	r.Post("/subscribe", rtr.relationshipRESTHandler.Subscribe())
 	r.Post("/befriend", rtr.relationshipRESTHandler.Befriend())

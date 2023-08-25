@@ -149,7 +149,7 @@ func testRelationshipsExists(t *testing.T) {
 		t.Error(err)
 	}
 
-	e, err := RelationshipExists(ctx, tx, o.SenderID, o.ReceiverID)
+	e, err := RelationshipExists(ctx, tx, o.ReceiverID, o.SenderID)
 	if err != nil {
 		t.Errorf("Unable to check if Relationship exists: %s", err)
 	}
@@ -175,7 +175,7 @@ func testRelationshipsFind(t *testing.T) {
 		t.Error(err)
 	}
 
-	relationshipFound, err := FindRelationship(ctx, tx, o.SenderID, o.ReceiverID)
+	relationshipFound, err := FindRelationship(ctx, tx, o.ReceiverID, o.SenderID)
 	if err != nil {
 		t.Error(err)
 	}
@@ -661,7 +661,7 @@ func testRelationshipToOneSetOpUserUsingReceiver(t *testing.T) {
 			t.Error("foreign key was wrong value", a.ReceiverID)
 		}
 
-		if exists, err := RelationshipExists(ctx, tx, a.SenderID, a.ReceiverID); err != nil {
+		if exists, err := RelationshipExists(ctx, tx, a.ReceiverID, a.SenderID); err != nil {
 			t.Fatal(err)
 		} else if !exists {
 			t.Error("want 'a' to exist")
@@ -714,7 +714,7 @@ func testRelationshipToOneSetOpUserUsingSender(t *testing.T) {
 			t.Error("foreign key was wrong value", a.SenderID)
 		}
 
-		if exists, err := RelationshipExists(ctx, tx, a.SenderID, a.ReceiverID); err != nil {
+		if exists, err := RelationshipExists(ctx, tx, a.ReceiverID, a.SenderID); err != nil {
 			t.Fatal(err)
 		} else if !exists {
 			t.Error("want 'a' to exist")
@@ -797,7 +797,7 @@ func testRelationshipsSelect(t *testing.T) {
 }
 
 var (
-	relationshipDBTypes = map[string]string{`SenderID`: `bigint`, `ReceiverID`: `bigint`, `Friends`: `boolean`, `Status`: `enum.subscription_status('r_blocked_s','r_subscribed_s','none')`}
+	relationshipDBTypes = map[string]string{`ReceiverID`: `bigint`, `SenderID`: `bigint`, `Status`: `enum.status('r_blocked_s','r_subscribed_s','friends')`}
 	_                   = bytes.MinRead
 )
 

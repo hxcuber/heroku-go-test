@@ -653,7 +653,7 @@ func (o *User) AddReceiverRelationships(ctx context.Context, exec boil.ContextEx
 				strmangle.SetParamNames("\"", "\"", 1, []string{"receiver_id"}),
 				strmangle.WhereClause("\"", "\"", 2, relationshipPrimaryKeyColumns),
 			)
-			values := []interface{}{o.UserID, rel.SenderID, rel.ReceiverID}
+			values := []interface{}{o.UserID, rel.ReceiverID, rel.SenderID}
 
 			if boil.IsDebug(ctx) {
 				writer := boil.DebugWriterFrom(ctx)
@@ -706,7 +706,7 @@ func (o *User) AddSenderRelationships(ctx context.Context, exec boil.ContextExec
 				strmangle.SetParamNames("\"", "\"", 1, []string{"sender_id"}),
 				strmangle.WhereClause("\"", "\"", 2, relationshipPrimaryKeyColumns),
 			)
-			values := []interface{}{o.UserID, rel.SenderID, rel.ReceiverID}
+			values := []interface{}{o.UserID, rel.ReceiverID, rel.SenderID}
 
 			if boil.IsDebug(ctx) {
 				writer := boil.DebugWriterFrom(ctx)

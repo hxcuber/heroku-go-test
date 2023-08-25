@@ -6,11 +6,13 @@ import (
 )
 
 type Controller interface {
-	GetFriends(ctx context.Context, email string) ([]string, error)
-	GetCommonFriends(ctx context.Context, email1 string, email2 string) ([]string, error)
-	GetReceivers(ctx context.Context, email string, text string) ([]string, error)
 	CreateUserByEmail(ctx context.Context, email string) error
-	CreateConnection(ctx context.Context, email1 string, email2 string) error
+	Friends(ctx context.Context, email string) ([]string, error)
+	CommonFriends(ctx context.Context, email1 string, email2 string) ([]string, error)
+	Receivers(ctx context.Context, email string, text string) ([]string, error)
+	Block(ctx context.Context, requestorEmail string, targetEmail string) error
+	Befriend(ctx context.Context, email1 string, email2 string) error
+	Subscribe(ctx context.Context, requestorEmail string, targetEmail string) error
 }
 
 type impl struct {

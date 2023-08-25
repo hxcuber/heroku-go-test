@@ -5,13 +5,12 @@ CREATE TABLE IF NOT EXISTS users (
     user_email TEXT UNIQUE NOT NULL
 );
 
-CREATE TYPE SUBSCRIPTION_STATUS AS ENUM ('r_blocked_s', 'r_subscribed_s', 'none');
+CREATE TYPE STATUS AS ENUM ('r_blocked_s', 'r_subscribed_s', 'friends');
 
 CREATE TABLE IF NOT EXISTS relationships (
-    sender_id BIGINT, receiver_id BIGINT,
-    friends BOOL NOT NULL DEFAULT false,
-    status SUBSCRIPTION_STATUS NOT NULL DEFAULT 'none',
-    PRIMARY KEY ( sender_id, receiver_id ),
+    receiver_id BIGINT, sender_id BIGINT,
+    status STATUS NOT NULL,
+    PRIMARY KEY ( receiver_id, sender_id ),
     FOREIGN KEY ( sender_id ) REFERENCES users ( user_id ),
     FOREIGN KEY ( receiver_id ) REFERENCES users ( user_id )
 );

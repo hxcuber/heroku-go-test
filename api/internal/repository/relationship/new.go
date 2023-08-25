@@ -10,8 +10,6 @@ type Repository interface {
 	GetFriends(ctx context.Context, user model.User) (model.Users, error)
 	GetSubscribers(ctx context.Context, sender model.User) (model.Users, error)
 	GetReceiversFromEmails(ctx context.Context, sender model.User, emails []string) (model.Users, error)
-	GetUserByEmail(ctx context.Context, email string) (model.User, error)
-	CreateUserByEmail(ctx context.Context, email string) error
 	CreateRelationship(ctx context.Context, rela model.Relationship) error
 	FindRelationship(ctx context.Context, receiver model.User, sender model.User) (*model.Relationship, error)
 	UpdateRelationship(ctx context.Context, rela model.Relationship) error

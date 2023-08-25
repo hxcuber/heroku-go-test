@@ -17,7 +17,7 @@ func (i impl) CreateUserByEmail(ctx context.Context, email string) error {
 				log.Printf(controller.LogErrMessage("CreateUserByEmail", "retrieving user by email", err))
 				return err
 			}
-			err = txRepo.Relationship().CreateUserByEmail(ctx, email)
+			err = txRepo.User().CreateUserByEmail(ctx, email)
 			if err != nil {
 				log.Printf(controller.LogErrMessage("CreateUserByEmail", "creating user by email", err))
 				return err

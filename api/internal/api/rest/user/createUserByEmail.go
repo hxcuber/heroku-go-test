@@ -16,11 +16,11 @@ func (h Handler) CreateUserByEmail() http.HandlerFunc {
 		}
 
 		if err := h.ctrl.CreateUserByEmail(r.Context(), request.Email); err != nil {
-			return err, http.StatusInternalServerError
+			return errors.New("Something went wrong"), http.StatusInternalServerError
 		}
 
 		if err := render.Render(w, r, basicSuccess.New(http.StatusCreated)); err != nil {
-			return err, http.StatusInternalServerError
+			return errors.New("Something went wrong"), http.StatusInternalServerError
 		}
 
 		return nil, http.StatusCreated

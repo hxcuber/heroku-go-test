@@ -12,7 +12,7 @@ func (i impl) Friends(ctx context.Context, email string) ([]string, error) {
 
 	var friends model.Users
 	err := i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
-		user, err := txRepo.Relationship().GetUserByEmail(ctx, email)
+		user, err := txRepo.User().GetUserByEmail(ctx, email)
 		if err != nil {
 			log.Printf(controller.LogErrMessage("Friends", "retrieving user by email %s", err, email))
 			return err

@@ -26,11 +26,11 @@ func (h Handler) Subscribe() http.HandlerFunc {
 			if errors.Is(err, relationship.ErrAlreadyCreated) {
 				return errors.Wrap(err, "subscription"), http.StatusConflict
 			}
-			return err, http.StatusInternalServerError
+			return errors.New("Something went wrong"), http.StatusInternalServerError
 		}
 
 		if err = render.Render(w, r, basicSuccess.New(http.StatusOK)); err != nil {
-			return err, http.StatusInternalServerError
+			return errors.New("Something went wrong"), http.StatusInternalServerError
 		}
 
 		return nil, http.StatusOK

@@ -23,11 +23,11 @@ func (h Handler) Receivers() http.HandlerFunc {
 			if errors.Is(err, user.ErrEmailNotFound) {
 				return err, http.StatusNotFound
 			}
-			return err, http.StatusInternalServerError
+			return errors.New("Something went wrong"), http.StatusInternalServerError
 		}
 
 		if err = render.Render(w, r, recipients.New(receivers, http.StatusOK)); err != nil {
-			return err, http.StatusInternalServerError
+			return errors.New("Something went wrong"), http.StatusInternalServerError
 		}
 
 		return nil, http.StatusOK

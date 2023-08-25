@@ -13,13 +13,13 @@ import (
 
 func (i impl) Befriend(ctx context.Context, email1 string, email2 string) error {
 	err := i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
-		user1, err := txRepo.Relationship().GetUserByEmail(ctx, email1)
+		user1, err := txRepo.User().GetUserByEmail(ctx, email1)
 		if err != nil {
 			log.Printf(controller.LogErrMessage("Befriend", "retrieving user1 by email %s", err, email1))
 			return err
 		}
 
-		user2, err := txRepo.Relationship().GetUserByEmail(ctx, email2)
+		user2, err := txRepo.User().GetUserByEmail(ctx, email2)
 		if err != nil {
 			log.Printf(controller.LogErrMessage("Befriend", "retrieving user2 by email %s", err, email2))
 			return err

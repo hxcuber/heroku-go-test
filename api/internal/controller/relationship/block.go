@@ -13,13 +13,13 @@ import (
 
 func (i impl) Block(ctx context.Context, requestorEmail string, targetEmail string) error {
 	err := i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
-		receiver, err := txRepo.Relationship().GetUserByEmail(ctx, requestorEmail)
+		receiver, err := txRepo.User().GetUserByEmail(ctx, requestorEmail)
 		if err != nil {
 			log.Printf(controller.LogErrMessage("Block", "retrieving receiver by email %s", err, requestorEmail))
 			return err
 		}
 
-		sender, err := txRepo.Relationship().GetUserByEmail(ctx, targetEmail)
+		sender, err := txRepo.User().GetUserByEmail(ctx, targetEmail)
 		if err != nil {
 			log.Printf(controller.LogErrMessage("Block", "retrieving sender by email %s", err, targetEmail))
 			return err

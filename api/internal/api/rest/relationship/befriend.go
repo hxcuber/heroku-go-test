@@ -27,11 +27,11 @@ func (h Handler) Befriend() http.HandlerFunc {
 			if errors.Is(err, relationship.ErrAlreadyCreated) {
 				return errors.Wrap(err, "friendship"), http.StatusConflict
 			}
-			return err, http.StatusInternalServerError
+			return errors.New("Something went wrong"), http.StatusInternalServerError
 		}
 
 		if err = render.Render(w, r, basicSuccess.New(http.StatusCreated)); err != nil {
-			return err, http.StatusInternalServerError
+			return errors.New("Something went wrong"), http.StatusInternalServerError
 		}
 
 		return nil, http.StatusCreated

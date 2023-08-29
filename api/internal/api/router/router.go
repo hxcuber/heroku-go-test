@@ -24,7 +24,6 @@ type Router struct {
 // Handler returns the Handler for use by the server
 func (rtr Router) Handler() http.Handler {
 	r := chi.NewRouter()
-	// TODO: add middleware here
 	r.Use(
 		render.SetContentType(render.ContentTypeJSON), // set content-type headers as application/json
 		middleware.Logger, // log relationship request calls

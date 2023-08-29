@@ -12,6 +12,10 @@ import (
 )
 
 func (i impl) GetReceiversFromEmails(ctx context.Context, sender model.User, emails []string) (model.Users, error) {
+	if len(emails) == 0 {
+		return nil, nil
+	}
+
 	var inClauseBuilder strings.Builder
 	inClauseBuilder.WriteString("(")
 	var emailsInterface []interface{}

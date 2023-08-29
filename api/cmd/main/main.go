@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/hxcuber/friends-management/api/internal/api/router"
+	router2 "github.com/hxcuber/friends-management/api/cmd/router"
 	relationshipController "github.com/hxcuber/friends-management/api/internal/controller/relationship"
 	systemController "github.com/hxcuber/friends-management/api/internal/controller/system"
 	userController "github.com/hxcuber/friends-management/api/internal/controller/user"
@@ -64,9 +64,9 @@ func run(ctx context.Context) error {
 
 func initRouter(
 	ctx context.Context,
-	dbConn pg.BeginnerExecutor) (router.Router, error) {
+	dbConn pg.BeginnerExecutor) (router2.Router, error) {
 	registry := repository.New(dbConn)
-	return router.New(
+	return router2.New(
 		ctx,
 		strings.Split(os.Getenv("CORS_ALLOWED_ORIGINS"), ","),
 		os.Getenv("GQL_INTROSPECTION_ENABLED") == "true",

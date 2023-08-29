@@ -31,11 +31,12 @@ func (i impl) Subscribe(ctx context.Context, requestorEmail string, targetEmail 
 				log.Printf(controller.LogErrMessage("Subscribe", "retrieving relationship sender to receiver", err))
 				return err
 			}
-		} else {
-			if relaStoR.Status == orm.StatusRBlockedS {
-				log.Printf(controller.LogErrMessage("Subscribe", "controller logic", ErrBlocked))
-				return ErrBlocked
-			}
+		} else if relaStoR.Status == orm.StatusRBlockedS {
+			log.Printf(controller.LogErrMessage("Subscribe", "controller logic", ErrBlocked))
+			return ErrBlocked
+		} else if relaStoR.Status == orm.StatusFriends {
+			log.Printf(controller.LogErrMessage("Subscribe", "controller logic", ErrFriends))
+			return ErrFriends
 		}
 
 		relaRtoS, err := txRepo.Relationship().FindRelationship(ctx, receiver, sender)

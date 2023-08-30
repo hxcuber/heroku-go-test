@@ -1,5 +1,5 @@
+DROP TYPE IF EXISTS STATUS;
 -- noinspection SqlNoDataSourceInspectionForFile
-
 CREATE TABLE IF NOT EXISTS users (
     user_id BIGSERIAL PRIMARY KEY,
     user_email TEXT UNIQUE NOT NULL
@@ -14,4 +14,3 @@ CREATE TABLE IF NOT EXISTS relationships (
     FOREIGN KEY ( sender_id ) REFERENCES users ( user_id ),
     FOREIGN KEY ( receiver_id ) REFERENCES users ( user_id )
 );
-

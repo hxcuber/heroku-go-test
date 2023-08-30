@@ -23,7 +23,7 @@ func (h Handler) Subscribe() http.HandlerFunc {
 			if errors.Is(err, user.ErrEmailNotFound) {
 				return err, http.StatusNotFound
 			}
-			if errors.Is(err, relationship.ErrAlreadyCreated) {
+			if errors.Is(err, relationship.ErrAlreadyCreated) || errors.Is(err, relationship.ErrFriends) || errors.Is(err, relationship.ErrBlocked) {
 				return errors.Wrap(err, "subscription"), http.StatusConflict
 			}
 			return errors.New("Something went wrong"), http.StatusInternalServerError

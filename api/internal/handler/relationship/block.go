@@ -23,7 +23,7 @@ func (h Handler) Block() http.HandlerFunc {
 			if errors.Is(err, user.ErrEmailNotFound) {
 				return err, http.StatusNotFound
 			}
-			if errors.Is(err, relationship.ErrAlreadyCreated) {
+			if errors.Is(err, relationship.ErrAlreadyCreated) || errors.Is(err, relationship.ErrBlocked) {
 				return errors.Wrap(err, "block"), http.StatusConflict
 			}
 			return errors.New("Something went wrong"), http.StatusInternalServerError

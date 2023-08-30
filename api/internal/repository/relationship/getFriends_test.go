@@ -92,7 +92,7 @@ func TestImpl_GetFriends(t *testing.T) {
 
 				// Then:
 				require.ElementsMatch(t, expOut, out)
-				require.ErrorIs(t, tc.expErr, err)
+				require.ErrorIs(t, err, tc.expErr)
 			})
 		})
 	}

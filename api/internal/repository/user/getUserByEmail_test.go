@@ -62,7 +62,7 @@ func TestImpl_GetUserByEmail(t *testing.T) {
 				out, err := repo.GetUserByEmail(context.Background(), input)
 
 				// Then:
-				require.ErrorIs(t, tc.expErr, err)
+				require.ErrorIs(t, err, tc.expErr)
 				require.Equal(t, tc.expOut, out)
 			})
 		})

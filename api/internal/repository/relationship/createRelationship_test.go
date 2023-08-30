@@ -104,7 +104,7 @@ func TestImpl_CreateRelationship(t *testing.T) {
 				if tc.expErr != nil {
 					require.ErrorContains(t, err, tc.expErr.Error())
 				} else {
-					require.ErrorIs(t, tc.expErr, err)
+					require.ErrorIs(t, err, tc.expErr)
 				}
 			})
 		})

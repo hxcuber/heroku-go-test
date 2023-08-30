@@ -72,7 +72,7 @@ func TestImpl_UpdateRelationship(t *testing.T) {
 
 				// Then:
 				exists, _ := relaAfter.Orm().Exists(context.Background(), executor)
-				require.ErrorIs(t, tc.expErr, err)
+				require.ErrorIs(t, err, tc.expErr)
 				require.True(t, exists)
 			})
 		})

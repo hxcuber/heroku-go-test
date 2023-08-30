@@ -2,6 +2,7 @@ package user
 
 import (
 	"github.com/go-chi/render"
+	"github.com/hxcuber/friends-management/api/internal/controller/user"
 	"github.com/hxcuber/friends-management/api/internal/handler"
 	"github.com/hxcuber/friends-management/api/internal/handler/request/email"
 	"github.com/hxcuber/friends-management/api/internal/handler/response/basicSuccess"
@@ -17,6 +18,9 @@ func (h Handler) CreateUserByEmail() http.HandlerFunc {
 		}
 
 		if err := h.ctrl.CreateUserByEmail(r.Context(), request.Email); err != nil {
+			if errors.Is(err, user.ErrAlreadyCreated) {
+				return err, http.StatusConflict
+			}
 			return errors.New("Something went wrong"), http.StatusInternalServerError
 		}
 

@@ -12,6 +12,9 @@ func IsEmail(s string) bool {
 	if len(partsDot) != 2 {
 		return false
 	}
+	if partsDot[1] == "" {
+		return false
+	}
 
 	return true
 }

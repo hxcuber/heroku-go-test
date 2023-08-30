@@ -8,7 +8,7 @@ import (
 
 func IsEmailError(s string, fieldName string) error {
 	if !util.IsEmail(s) {
-		return errors.New(fmt.Sprintf("%s must be an email", fieldName))
+		return errors.New(fmt.Sprintf("%s field must be an email", fieldName))
 	}
 	return nil
 }

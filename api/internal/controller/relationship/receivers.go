@@ -26,7 +26,7 @@ func (i impl) Receivers(ctx context.Context, senderEmail string, text string) ([
 	err := i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
 		sender, err := txRepo.User().GetUserByEmail(ctx, senderEmail)
 		if err != nil {
-			log.Printf(controller.LogErrMessage("Receivers", "retrieving sender by email %s", err))
+			log.Printf(controller.LogErrMessage("Receivers", "retrieving sender by email %s", err, senderEmail))
 			return err
 		}
 

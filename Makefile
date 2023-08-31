@@ -42,17 +42,17 @@ endif
 api-test:
 	@${API_COMPOSE} sh -c "go test -mod=vendor -coverprofile=c.out -failfast -timeout 5m ./..."
 api-run:
-	@${API_COMPOSE} sh -c "go run -mod=vendor cmd/serverd/*.go"
+	@${API_COMPOSE} sh -c "go run -mod=vendor cmd/friends_management/*.go"
 api-build-binaries:
 	@${API_COMPOSE} sh -c "\
 		go clean -mod=vendor -i -x -cache ./... && \
-		go build -mod=vendor -v -a -i -o binaries/serverd ./cmd/serverd && \
+		go build -mod=vendor -v -a -i -o binaries/friends_management ./cmd/friends_management && \
 		go build -mod=vendor -v -a -i -o binaries/job ./cmd/job && \
 		go build -mod=vendor -v -a -i -o binaries/multipartitionconsumer ./cmd/multipartitionconsumer && \
 		go build -mod=vendor -v -a -i -o binaries/singlepartitionconsumer ./cmd/singlepartitionconsumer && \
 		go build -mod=vendor -v -a -i -o binaries/datagen ./cmd/datagen "
 api-update-vendor:
-	@${API_COMPOSE} sh -c "go mod tidy -compat=1.17 && go mod vendor"
+	@${API_COMPOSE} sh -c "go mod tidy -compat=1.18 && go mod vendor"
 api-gen-mocks:
 	@${API_COMPOSE} sh -c "mockery --dir internal/controller --all --recursive --inpackage"
 	@${API_COMPOSE} sh -c "mockery --dir internal/repository --all --recursive --inpackage"

@@ -2,24 +2,25 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"log"
+	"os"
+	"strings"
+
 	router2 "github.com/hxcuber/friends-management/api/cmd/router"
 	relationshipController "github.com/hxcuber/friends-management/api/internal/controller/relationship"
 	systemController "github.com/hxcuber/friends-management/api/internal/controller/system"
 	userController "github.com/hxcuber/friends-management/api/internal/controller/user"
 	"github.com/hxcuber/friends-management/api/internal/repository"
 	"github.com/hxcuber/friends-management/api/pkg/db/pg"
+	"github.com/hxcuber/friends-management/api/pkg/env"
 	"github.com/hxcuber/friends-management/api/pkg/httpserv"
-	"log"
-	"os"
-	"strings"
 )
 
 const (
 	host     = "localhost"
 	port     = 5432
-	username = "hxcuber"
-	password = "hxcuber"
+	username = "friends"
+	password = "friends"
 	dbname   = "friends"
 )
 
@@ -38,8 +39,7 @@ func run(ctx context.Context) error {
 
 	dbOpenConns := 4
 	dbIdleConns := 2
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		host, port, username, password, dbname)
+	psqlInfo := env.GetAndValidateF("DB_URL")
 	conn, err := pg.NewPool(psqlInfo, dbOpenConns, dbIdleConns)
 	if err != nil {
 		return err

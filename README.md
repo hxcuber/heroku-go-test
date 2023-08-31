@@ -4,7 +4,7 @@ A basic API for a friend management system, with blocks, subscriptions and frien
 ```
 /api: contains backend code
 	/cmd
-		/friends-management
+		/friends_management
 			/main.go: entry point of project
 		/router: handle routing
 	/internal: private application and library code.

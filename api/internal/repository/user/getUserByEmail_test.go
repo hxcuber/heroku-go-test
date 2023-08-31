@@ -8,7 +8,6 @@ import (
 	"github.com/hxcuber/friends-management/api/pkg/testutil"
 	"github.com/stretchr/testify/require"
 	"github.com/volatiletech/sqlboiler/v4/boil"
-	"os"
 	"testing"
 )
 
@@ -28,7 +27,6 @@ func TestImpl_GetUserByEmail(t *testing.T) {
 		expErr error
 	}
 
-	os.Setenv("DB_URL", "postgres://friends_management:@pg:5432/friends_management?sslmode=disable")
 	for s, tc := range map[string]test{
 		"emailNotFound": {
 			create: false,

@@ -3,7 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	router2 "github.com/hxcuber/friends-management/api/cmd/router"
+	"log"
+	"os"
+	"strings"
+
+	"github.com/hxcuber/friends-management/api/cmd/router"
 	"github.com/hxcuber/friends-management/api/internal/config"
 	relationshipController "github.com/hxcuber/friends-management/api/internal/controller/relationship"
 	systemController "github.com/hxcuber/friends-management/api/internal/controller/system"
@@ -14,10 +18,7 @@ import (
 	"github.com/hxcuber/friends-management/api/pkg/env"
 	"github.com/hxcuber/friends-management/api/pkg/httpserv"
 	"github.com/pkg/errors"
-	"log"
-	"os"
 	"strconv"
-	"strings"
 )
 
 func main() {
@@ -61,6 +62,7 @@ func run(ctx context.Context) error {
 	}
 
 	conn, err := pg.NewPool(config.DBSource, dbOpenConns, dbIdleConns)
+
 	if err != nil {
 		return err
 	}
@@ -78,9 +80,9 @@ func run(ctx context.Context) error {
 
 func initRouter(
 	ctx context.Context,
-	dbConn pg.BeginnerExecutor) (router2.Router, error) {
+	dbConn pg.BeginnerExecutor) (router.Router, error) {
 	registry := repository.New(dbConn)
-	return router2.New(
+	return router.New(
 		ctx,
 		strings.Split(os.Getenv("CORS_ALLOWED_ORIGINS"), ","),
 		os.Getenv("GQL_INTROSPECTION_ENABLED") == "true",

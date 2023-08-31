@@ -33,8 +33,10 @@ func TestImpl_Befriend(t *testing.T) {
 	type relaRepoCreateRela struct {
 		err error
 	}
-
 	type relaRepoUpdateRela struct {
+		err error
+	}
+	type relaRepoDeleteRela struct {
 		err error
 	}
 	type test struct {
@@ -46,11 +48,430 @@ func TestImpl_Befriend(t *testing.T) {
 		create2to1 relaRepoCreateRela
 		update1to2 relaRepoUpdateRela
 		update2to1 relaRepoUpdateRela
+		delete1to2 relaRepoDeleteRela
 		expErr     error
 	}
 
 	for s, tc := range map[string]test{
-		"update_success_both": {
+		"fail_user_1_not_found": {
+			get1: userRepoGetUser{
+				out: model.User{},
+				err: user.ErrEmailNotFound,
+			},
+			get2:       userRepoGetUser{},
+			find1to2:   relaRepoFindRela{},
+			find2to1:   relaRepoFindRela{},
+			create1to2: relaRepoCreateRela{},
+			create2to1: relaRepoCreateRela{},
+			update1to2: relaRepoUpdateRela{},
+			update2to1: relaRepoUpdateRela{},
+			expErr:     user.ErrEmailNotFound,
+		},
+		"fail_user_2_not_found": {
+			get1: userRepoGetUser{
+				out: model.User{
+					UserID:    1,
+					UserEmail: testConst.email1,
+				},
+				err: nil,
+			},
+			get2: userRepoGetUser{
+				out: model.User{},
+				err: user.ErrEmailNotFound,
+			},
+			find1to2:   relaRepoFindRela{},
+			find2to1:   relaRepoFindRela{},
+			create1to2: relaRepoCreateRela{},
+			create2to1: relaRepoCreateRela{},
+			update1to2: relaRepoUpdateRela{},
+			update2to1: relaRepoUpdateRela{},
+			expErr:     user.ErrEmailNotFound,
+		},
+		"fail_find1to2_unknown": {
+			get1: userRepoGetUser{
+				out: model.User{
+					UserID:    1,
+					UserEmail: testConst.email1,
+				},
+				err: nil,
+			},
+			get2: userRepoGetUser{
+				out: model.User{
+					UserID:    2,
+					UserEmail: testConst.email2,
+				},
+				err: nil,
+			},
+			find1to2: relaRepoFindRela{
+				out: nil,
+				err: errors.New("unknown"),
+			},
+			find2to1:   relaRepoFindRela{},
+			create1to2: relaRepoCreateRela{},
+			create2to1: relaRepoCreateRela{},
+			update1to2: relaRepoUpdateRela{},
+			update2to1: relaRepoUpdateRela{},
+			expErr:     errors.New("unknown"),
+		},
+		"fail_create1to2_unknown": {
+			get1: userRepoGetUser{
+				out: model.User{
+					UserID:    1,
+					UserEmail: testConst.email1,
+				},
+				err: nil,
+			},
+			get2: userRepoGetUser{
+				out: model.User{
+					UserID:    2,
+					UserEmail: testConst.email2,
+				},
+				err: nil,
+			},
+			find1to2: relaRepoFindRela{
+				out: nil,
+				err: relationship.ErrRelationshipNotFound,
+			},
+			find2to1: relaRepoFindRela{},
+			create1to2: relaRepoCreateRela{
+				err: errors.New("unknown"),
+			},
+			create2to1: relaRepoCreateRela{},
+			update1to2: relaRepoUpdateRela{},
+			update2to1: relaRepoUpdateRela{},
+			expErr:     errors.New("unknown"),
+		},
+		"fail_1to2_blocked": {
+			get1: userRepoGetUser{
+				out: model.User{
+					UserID:    1,
+					UserEmail: testConst.email1,
+				},
+				err: nil,
+			},
+			get2: userRepoGetUser{
+				out: model.User{
+					UserID:    2,
+					UserEmail: testConst.email2,
+				},
+				err: nil,
+			},
+			find1to2: relaRepoFindRela{
+				out: &model.Relationship{
+					ReceiverID: 1,
+					SenderID:   2,
+					Status:     orm.StatusRBlockedS,
+				},
+				err: nil,
+			},
+			find2to1:   relaRepoFindRela{},
+			create1to2: relaRepoCreateRela{},
+			create2to1: relaRepoCreateRela{},
+			update1to2: relaRepoUpdateRela{},
+			update2to1: relaRepoUpdateRela{},
+			expErr:     ErrBlocked,
+		},
+		"fail_1to2_already_created": {
+			get1: userRepoGetUser{
+				out: model.User{
+					UserID:    1,
+					UserEmail: testConst.email1,
+				},
+				err: nil,
+			},
+			get2: userRepoGetUser{
+				out: model.User{
+					UserID:    2,
+					UserEmail: testConst.email2,
+				},
+				err: nil,
+			},
+			find1to2: relaRepoFindRela{
+				out: &model.Relationship{
+					ReceiverID: 1,
+					SenderID:   2,
+					Status:     orm.StatusFriends,
+				},
+				err: nil,
+			},
+			find2to1:   relaRepoFindRela{},
+			create1to2: relaRepoCreateRela{},
+			create2to1: relaRepoCreateRela{},
+			update1to2: relaRepoUpdateRela{},
+			update2to1: relaRepoUpdateRela{},
+			expErr:     ErrAlreadyCreated,
+		},
+		"fail_update1to2_unknown": {
+			get1: userRepoGetUser{
+				out: model.User{
+					UserID:    1,
+					UserEmail: testConst.email1,
+				},
+				err: nil,
+			},
+			get2: userRepoGetUser{
+				out: model.User{
+					UserID:    2,
+					UserEmail: testConst.email2,
+				},
+				err: nil,
+			},
+			find1to2: relaRepoFindRela{
+				out: &model.Relationship{
+					ReceiverID: 1,
+					SenderID:   2,
+					Status:     orm.StatusRSubscribedS,
+				},
+				err: nil,
+			},
+			find2to1:   relaRepoFindRela{},
+			create1to2: relaRepoCreateRela{},
+			create2to1: relaRepoCreateRela{},
+			update1to2: relaRepoUpdateRela{
+				err: errors.New("unknown"),
+			},
+			update2to1: relaRepoUpdateRela{},
+			expErr:     errors.New("unknown"),
+		},
+		"fail_find2to1_unknown": {
+			get1: userRepoGetUser{
+				out: model.User{
+					UserID:    1,
+					UserEmail: testConst.email1,
+				},
+				err: nil,
+			},
+			get2: userRepoGetUser{
+				out: model.User{
+					UserID:    2,
+					UserEmail: testConst.email2,
+				},
+				err: nil,
+			},
+			find1to2: relaRepoFindRela{
+				out: &model.Relationship{
+					ReceiverID: 1,
+					SenderID:   2,
+					Status:     orm.StatusRSubscribedS,
+				},
+				err: nil,
+			},
+			find2to1: relaRepoFindRela{
+				out: nil,
+				err: errors.New("unknown"),
+			},
+			create1to2: relaRepoCreateRela{},
+			create2to1: relaRepoCreateRela{},
+			update1to2: relaRepoUpdateRela{},
+			update2to1: relaRepoUpdateRela{},
+			expErr:     errors.New("unknown"),
+		},
+		"fail_create2to1_unknown": {
+			get1: userRepoGetUser{
+				out: model.User{
+					UserID:    1,
+					UserEmail: testConst.email1,
+				},
+				err: nil,
+			},
+			get2: userRepoGetUser{
+				out: model.User{
+					UserID:    2,
+					UserEmail: testConst.email2,
+				},
+				err: nil,
+			},
+			find1to2: relaRepoFindRela{
+				out: &model.Relationship{
+					ReceiverID: 1,
+					SenderID:   2,
+					Status:     orm.StatusRSubscribedS,
+				},
+				err: nil,
+			},
+			find2to1: relaRepoFindRela{
+				out: nil,
+				err: relationship.ErrRelationshipNotFound,
+			},
+			create1to2: relaRepoCreateRela{},
+			create2to1: relaRepoCreateRela{
+				err: errors.New("unknown"),
+			},
+			update1to2: relaRepoUpdateRela{},
+			update2to1: relaRepoUpdateRela{},
+			expErr:     errors.New("unknown"),
+		},
+		"fail_delete2to1_unknown": {
+			get1: userRepoGetUser{
+				out: model.User{
+					UserID:    1,
+					UserEmail: testConst.email1,
+				},
+				err: nil,
+			},
+			get2: userRepoGetUser{
+				out: model.User{
+					UserID:    2,
+					UserEmail: testConst.email2,
+				},
+				err: nil,
+			},
+			find1to2: relaRepoFindRela{
+				out: nil,
+				err: relationship.ErrRelationshipNotFound,
+			},
+			find2to1: relaRepoFindRela{
+				out: &model.Relationship{
+					ReceiverID: 1,
+					SenderID:   2,
+					Status:     orm.StatusRBlockedS,
+				},
+				err: nil,
+			},
+			create1to2: relaRepoCreateRela{},
+			create2to1: relaRepoCreateRela{},
+			update1to2: relaRepoUpdateRela{},
+			update2to1: relaRepoUpdateRela{},
+			delete1to2: relaRepoDeleteRela{
+				err: errors.New("unknown"),
+			},
+			expErr: errors.New("unknown"),
+		},
+		"fail_2to1_blocked": {
+			get1: userRepoGetUser{
+				out: model.User{
+					UserID:    1,
+					UserEmail: testConst.email1,
+				},
+				err: nil,
+			},
+			get2: userRepoGetUser{
+				out: model.User{
+					UserID:    2,
+					UserEmail: testConst.email2,
+				},
+				err: nil,
+			},
+			find1to2: relaRepoFindRela{
+				out: nil,
+				err: relationship.ErrRelationshipNotFound,
+			},
+			find2to1: relaRepoFindRela{
+				out: &model.Relationship{
+					ReceiverID: 1,
+					SenderID:   2,
+					Status:     orm.StatusRBlockedS,
+				},
+				err: nil,
+			},
+			create1to2: relaRepoCreateRela{},
+			create2to1: relaRepoCreateRela{},
+			update1to2: relaRepoUpdateRela{},
+			update2to1: relaRepoUpdateRela{},
+			expErr:     ErrBlocked,
+		},
+		"fail_2to1_already_created": {
+			get1: userRepoGetUser{
+				out: model.User{
+					UserID:    1,
+					UserEmail: testConst.email1,
+				},
+				err: nil,
+			},
+			get2: userRepoGetUser{
+				out: model.User{
+					UserID:    2,
+					UserEmail: testConst.email2,
+				},
+				err: nil,
+			},
+			find1to2: relaRepoFindRela{
+				out: nil,
+				err: relationship.ErrRelationshipNotFound,
+			},
+			find2to1: relaRepoFindRela{
+				out: &model.Relationship{
+					ReceiverID: 1,
+					SenderID:   2,
+					Status:     orm.StatusFriends,
+				},
+				err: nil,
+			},
+			create1to2: relaRepoCreateRela{},
+			create2to1: relaRepoCreateRela{},
+			update1to2: relaRepoUpdateRela{},
+			update2to1: relaRepoUpdateRela{},
+			expErr:     ErrAlreadyCreated,
+		},
+		"fail_update2to1_unknown": {
+			get1: userRepoGetUser{
+				out: model.User{
+					UserID:    1,
+					UserEmail: testConst.email1,
+				},
+				err: nil,
+			},
+			get2: userRepoGetUser{
+				out: model.User{
+					UserID:    2,
+					UserEmail: testConst.email2,
+				},
+				err: nil,
+			},
+			find1to2: relaRepoFindRela{
+				out: nil,
+				err: relationship.ErrRelationshipNotFound,
+			},
+			find2to1: relaRepoFindRela{
+				out: &model.Relationship{
+					ReceiverID: 1,
+					SenderID:   2,
+					Status:     orm.StatusRSubscribedS,
+				},
+				err: nil,
+			},
+			create1to2: relaRepoCreateRela{},
+			create2to1: relaRepoCreateRela{},
+			update1to2: relaRepoUpdateRela{},
+			update2to1: relaRepoUpdateRela{
+				err: errors.New("unknown"),
+			},
+			expErr: errors.New("unknown"),
+		},
+		"success_create_update": {
+			get1: userRepoGetUser{
+				out: model.User{
+					UserID:    1,
+					UserEmail: testConst.email1,
+				},
+				err: nil,
+			},
+			get2: userRepoGetUser{
+				out: model.User{
+					UserID:    2,
+					UserEmail: testConst.email2,
+				},
+				err: nil,
+			},
+			find1to2: relaRepoFindRela{
+				out: nil,
+				err: relationship.ErrRelationshipNotFound,
+			},
+			find2to1: relaRepoFindRela{
+				out: &model.Relationship{
+					ReceiverID: 1,
+					SenderID:   2,
+					Status:     orm.StatusRSubscribedS,
+				},
+				err: nil,
+			},
+			create1to2: relaRepoCreateRela{},
+			create2to1: relaRepoCreateRela{},
+			update1to2: relaRepoUpdateRela{},
+			update2to1: relaRepoUpdateRela{},
+			expErr:     nil,
+		},
+		"success_update_both": {
 			get1: userRepoGetUser{
 				out: model.User{
 					UserID:    1,
@@ -81,12 +502,8 @@ func TestImpl_Befriend(t *testing.T) {
 				},
 				err: nil,
 			},
-			create1to2: relaRepoCreateRela{
-				err: nil,
-			},
-			create2to1: relaRepoCreateRela{
-				err: nil,
-			},
+			create1to2: relaRepoCreateRela{},
+			create2to1: relaRepoCreateRela{},
 			update1to2: relaRepoUpdateRela{
 				err: nil,
 			},
@@ -94,6 +511,35 @@ func TestImpl_Befriend(t *testing.T) {
 				err: nil,
 			},
 			expErr: nil,
+		},
+		"success_create_both": {
+			get1: userRepoGetUser{
+				out: model.User{
+					UserID:    1,
+					UserEmail: testConst.email1,
+				},
+				err: nil,
+			},
+			get2: userRepoGetUser{
+				out: model.User{
+					UserID:    2,
+					UserEmail: testConst.email2,
+				},
+				err: nil,
+			},
+			find1to2: relaRepoFindRela{
+				out: nil,
+				err: relationship.ErrRelationshipNotFound,
+			},
+			find2to1: relaRepoFindRela{
+				out: nil,
+				err: relationship.ErrRelationshipNotFound,
+			},
+			create1to2: relaRepoCreateRela{},
+			create2to1: relaRepoCreateRela{},
+			update1to2: relaRepoUpdateRela{},
+			update2to1: relaRepoUpdateRela{},
+			expErr:     nil,
 		},
 	} {
 		t.Run(s, func(t *testing.T) {
@@ -150,6 +596,9 @@ func TestImpl_Befriend(t *testing.T) {
 					func(ctx context.Context, relationship model.Relationship) error {
 						return tc.create1to2.err
 					})
+				if tc.create1to2.err != nil {
+					goto execute
+				}
 			} else {
 				if tc.find1to2.out.Status != orm.StatusRSubscribedS {
 					goto execute
@@ -162,6 +611,9 @@ func TestImpl_Befriend(t *testing.T) {
 					func(ctx context.Context, relationship model.Relationship) error {
 						return tc.update1to2.err
 					})
+				if tc.update1to2.err != nil {
+					goto execute
+				}
 			}
 
 			relaRepo.On("FindRelationship", mock.Anything, tc.get2.out, tc.get1.out).Return(
@@ -180,8 +632,22 @@ func TestImpl_Befriend(t *testing.T) {
 					func(ctx context.Context, relationship model.Relationship) error {
 						return tc.create2to1.err
 					})
+				if tc.create2to1.err != nil {
+					goto execute
+				}
 			} else {
-				if tc.find2to1.out.Status != orm.StatusRSubscribedS {
+				if tc.find2to1.out.Status == orm.StatusRBlockedS {
+					relaRepo.On("DeleteRelationship", mock.Anything, model.Relationship{
+						ReceiverID: tc.get1.out.UserID,
+						SenderID:   tc.get2.out.UserID,
+						Status:     orm.StatusFriends,
+					}).Return(
+						func(ctx context.Context, relationship model.Relationship) error {
+							return tc.delete1to2.err
+						})
+					goto execute
+				}
+				if tc.find2to1.out.Status == orm.StatusFriends {
 					goto execute
 				}
 				relaRepo.On("UpdateRelationship", mock.Anything, model.Relationship{
@@ -192,11 +658,18 @@ func TestImpl_Befriend(t *testing.T) {
 					func(ctx context.Context, relationship model.Relationship) error {
 						return tc.update2to1.err
 					})
+				if tc.update2to1.err != nil {
+					goto execute
+				}
 			}
 
 		execute:
 			err := relaCtrl.Befriend(context.Background(), testConst.email1, testConst.email2)
-			require.ErrorIs(t, err, tc.expErr)
+			if tc.expErr != nil {
+				require.ErrorContains(t, err, tc.expErr.Error())
+			} else {
+				require.ErrorIs(t, err, tc.expErr)
+			}
 		})
 	}
 }

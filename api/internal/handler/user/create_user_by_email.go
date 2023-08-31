@@ -5,7 +5,7 @@ import (
 	"github.com/hxcuber/friends-management/api/internal/controller/user"
 	"github.com/hxcuber/friends-management/api/internal/handler"
 	"github.com/hxcuber/friends-management/api/internal/handler/request/email"
-	"github.com/hxcuber/friends-management/api/internal/handler/response/basicSuccess"
+	"github.com/hxcuber/friends-management/api/internal/handler/response/basic_success"
 	"github.com/pkg/errors"
 	"net/http"
 )
@@ -24,7 +24,7 @@ func (h Handler) CreateUserByEmail() http.HandlerFunc {
 			return errors.New("Something went wrong"), http.StatusInternalServerError
 		}
 
-		if err := render.Render(w, r, basicSuccess.New(http.StatusCreated)); err != nil {
+		if err := render.Render(w, r, basic_success.New(http.StatusCreated)); err != nil {
 			return errors.New("Something went wrong"), http.StatusInternalServerError
 		}
 

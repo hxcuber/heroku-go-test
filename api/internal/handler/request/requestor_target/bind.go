@@ -1,4 +1,4 @@
-package requestorTarget
+package requestor_target
 
 import (
 	"github.com/hxcuber/friends-management/api/internal/handler/request"

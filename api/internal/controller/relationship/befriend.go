@@ -85,6 +85,11 @@ func (i impl) Befriend(ctx context.Context, email1 string, email2 string) error 
 			switch rela2to1.Status {
 			case orm.StatusRBlockedS:
 				{
+					err = txRepo.Relationship().DeleteRelationship(ctx, *rela1to2)
+					if err != nil {
+						log.Printf(controller.LogErrMessage("Befriend", "deleting relationship 1 to 2", err))
+						return err
+					}
 					log.Printf(controller.LogErrMessage("Befriend", "controller logic", ErrBlocked))
 					return ErrBlocked
 				}

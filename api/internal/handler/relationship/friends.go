@@ -4,7 +4,7 @@ import (
 	"github.com/go-chi/render"
 	"github.com/hxcuber/friends-management/api/internal/handler"
 	"github.com/hxcuber/friends-management/api/internal/handler/request/email"
-	"github.com/hxcuber/friends-management/api/internal/handler/response/listWithCount"
+	"github.com/hxcuber/friends-management/api/internal/handler/response/list_with_count"
 	"github.com/hxcuber/friends-management/api/internal/repository/user"
 	"github.com/pkg/errors"
 	"net/http"
@@ -26,7 +26,7 @@ func (h Handler) Friends() http.HandlerFunc {
 			return errors.New("Something went wrong"), http.StatusInternalServerError
 		}
 
-		if err = render.Render(w, r, listWithCount.New(list, http.StatusOK)); err != nil {
+		if err = render.Render(w, r, list_with_count.New(list, http.StatusOK)); err != nil {
 			return errors.New("Something went wrong"), http.StatusInternalServerError
 		}
 

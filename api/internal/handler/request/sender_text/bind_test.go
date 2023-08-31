@@ -1,4 +1,4 @@
-package senderText
+package sender_text
 
 import (
 	"github.com/pkg/errors"

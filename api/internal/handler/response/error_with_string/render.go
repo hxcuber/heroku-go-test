@@ -1,4 +1,4 @@
-package errorWithString
+package error_with_string
 
 import "net/http"
 

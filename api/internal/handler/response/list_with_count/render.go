@@ -1,8 +1,6 @@
-package basicSuccess
+package list_with_count
 
-import (
-	"net/http"
-)
+import "net/http"
 
 func (resp *Response) Render(w http.ResponseWriter, r *http.Request) error {
 	w.WriteHeader(resp.HttpStatusCode)

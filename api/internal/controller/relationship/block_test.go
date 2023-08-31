@@ -54,6 +54,254 @@ func TestImpl_Block(t *testing.T) {
 	}
 
 	for s, tc := range map[string]test{
+		"fail_req_not_found": {
+			getReq: userRepoGetUser{
+				out: model.User{},
+				err: user.ErrEmailNotFound,
+			},
+			getTar:     userRepoGetUser{},
+			findStoR:   relaRepoFindRela{},
+			findRtoS:   relaRepoFindRela{},
+			deleteStoR: relaRepoDeleteRela{},
+			createRtoS: relaRepoCreateRela{},
+			updateRtoS: relaRepoUpdateRela{},
+			expErr:     user.ErrEmailNotFound,
+		},
+		"fail_tar_not_found": {
+			getReq: userRepoGetUser{
+				out: model.User{
+					UserID:    1,
+					UserEmail: testConst.requestorEmail,
+				},
+				err: user.ErrEmailNotFound,
+			},
+			getTar: userRepoGetUser{
+				out: model.User{},
+				err: user.ErrEmailNotFound,
+			},
+			findStoR:   relaRepoFindRela{},
+			findRtoS:   relaRepoFindRela{},
+			deleteStoR: relaRepoDeleteRela{},
+			createRtoS: relaRepoCreateRela{},
+			updateRtoS: relaRepoUpdateRela{},
+			expErr:     user.ErrEmailNotFound,
+		},
+		"fail_findStoR_unknown": {
+			getReq: userRepoGetUser{
+				out: model.User{
+					UserID:    1,
+					UserEmail: testConst.requestorEmail,
+				},
+				err: nil,
+			},
+			getTar: userRepoGetUser{
+				out: model.User{
+					UserID:    2,
+					UserEmail: testConst.targetEmail,
+				},
+				err: nil,
+			},
+			findStoR: relaRepoFindRela{
+				out: nil,
+				err: errors.New("unknown"),
+			},
+			findRtoS: relaRepoFindRela{
+				out: nil,
+				err: nil,
+			},
+			deleteStoR: relaRepoDeleteRela{
+				err: nil,
+			},
+			createRtoS: relaRepoCreateRela{
+				err: nil,
+			},
+			updateRtoS: relaRepoUpdateRela{
+				err: nil,
+			},
+			expErr: errors.New("unknown"),
+		},
+		"fail_s_blocked_r": {
+			getReq: userRepoGetUser{
+				out: model.User{
+					UserID:    1,
+					UserEmail: testConst.requestorEmail,
+				},
+				err: nil,
+			},
+			getTar: userRepoGetUser{
+				out: model.User{
+					UserID:    2,
+					UserEmail: testConst.targetEmail,
+				},
+				err: nil,
+			},
+			findStoR: relaRepoFindRela{
+				out: &model.Relationship{
+					ReceiverID: 2,
+					SenderID:   1,
+					Status:     orm.StatusRBlockedS,
+				},
+				err: nil,
+			},
+			findRtoS: relaRepoFindRela{
+				out: nil,
+				err: nil,
+			},
+			deleteStoR: relaRepoDeleteRela{
+				err: nil,
+			},
+			createRtoS: relaRepoCreateRela{
+				err: nil,
+			},
+			updateRtoS: relaRepoUpdateRela{
+				err: nil,
+			},
+			expErr: ErrBlocked,
+		},
+		"fail_findRtoS_unknown": {
+			getReq: userRepoGetUser{
+				out: model.User{
+					UserID:    1,
+					UserEmail: testConst.requestorEmail,
+				},
+				err: nil,
+			},
+			getTar: userRepoGetUser{
+				out: model.User{
+					UserID:    2,
+					UserEmail: testConst.targetEmail,
+				},
+				err: nil,
+			},
+			findStoR: relaRepoFindRela{
+				out: nil,
+				err: relationship.ErrRelationshipNotFound,
+			},
+			findRtoS: relaRepoFindRela{
+				out: nil,
+				err: errors.New("unknown"),
+			},
+			deleteStoR: relaRepoDeleteRela{
+				err: nil,
+			},
+			createRtoS: relaRepoCreateRela{
+				err: nil,
+			},
+			updateRtoS: relaRepoUpdateRela{
+				err: nil,
+			},
+			expErr: errors.New("unknown"),
+		},
+		"fail_createRtoS_unknown": {
+			getReq: userRepoGetUser{
+				out: model.User{
+					UserID:    1,
+					UserEmail: testConst.requestorEmail,
+				},
+				err: nil,
+			},
+			getTar: userRepoGetUser{
+				out: model.User{
+					UserID:    2,
+					UserEmail: testConst.targetEmail,
+				},
+				err: nil,
+			},
+			findStoR: relaRepoFindRela{
+				out: nil,
+				err: relationship.ErrRelationshipNotFound,
+			},
+			findRtoS: relaRepoFindRela{
+				out: nil,
+				err: relationship.ErrRelationshipNotFound,
+			},
+			deleteStoR: relaRepoDeleteRela{
+				err: nil,
+			},
+			createRtoS: relaRepoCreateRela{
+				err: errors.New("unknown"),
+			},
+			updateRtoS: relaRepoUpdateRela{
+				err: nil,
+			},
+			expErr: errors.New("unknown"),
+		},
+		"fail_already_created": {
+			getReq: userRepoGetUser{
+				out: model.User{
+					UserID:    1,
+					UserEmail: testConst.requestorEmail,
+				},
+				err: nil,
+			},
+			getTar: userRepoGetUser{
+				out: model.User{
+					UserID:    2,
+					UserEmail: testConst.targetEmail,
+				},
+				err: nil,
+			},
+			findStoR: relaRepoFindRela{
+				out: nil,
+				err: relationship.ErrRelationshipNotFound,
+			},
+			findRtoS: relaRepoFindRela{
+				out: &model.Relationship{
+					ReceiverID: 1,
+					SenderID:   2,
+					Status:     orm.StatusRBlockedS,
+				},
+				err: nil,
+			},
+			deleteStoR: relaRepoDeleteRela{
+				err: nil,
+			},
+			createRtoS: relaRepoCreateRela{
+				err: nil,
+			},
+			updateRtoS: relaRepoUpdateRela{
+				err: nil,
+			},
+			expErr: ErrAlreadyCreated,
+		},
+		"fail_updateRtoS_unknown": {
+			getReq: userRepoGetUser{
+				out: model.User{
+					UserID:    1,
+					UserEmail: testConst.requestorEmail,
+				},
+				err: nil,
+			},
+			getTar: userRepoGetUser{
+				out: model.User{
+					UserID:    2,
+					UserEmail: testConst.targetEmail,
+				},
+				err: nil,
+			},
+			findStoR: relaRepoFindRela{
+				out: nil,
+				err: relationship.ErrRelationshipNotFound,
+			},
+			findRtoS: relaRepoFindRela{
+				out: &model.Relationship{
+					ReceiverID: 1,
+					SenderID:   2,
+					Status:     orm.StatusRSubscribedS,
+				},
+				err: nil,
+			},
+			deleteStoR: relaRepoDeleteRela{
+				err: nil,
+			},
+			createRtoS: relaRepoCreateRela{
+				err: nil,
+			},
+			updateRtoS: relaRepoUpdateRela{
+				err: errors.New("unknown"),
+			},
+			expErr: errors.New("unknown"),
+		},
 		"success_update_delete": {
 			getReq: userRepoGetUser{
 				out: model.User{
@@ -206,82 +454,6 @@ func TestImpl_Block(t *testing.T) {
 			},
 			expErr: nil,
 		},
-		"fail_already_created": {
-			getReq: userRepoGetUser{
-				out: model.User{
-					UserID:    1,
-					UserEmail: testConst.requestorEmail,
-				},
-				err: nil,
-			},
-			getTar: userRepoGetUser{
-				out: model.User{
-					UserID:    2,
-					UserEmail: testConst.targetEmail,
-				},
-				err: nil,
-			},
-			findStoR: relaRepoFindRela{
-				out: nil,
-				err: relationship.ErrRelationshipNotFound,
-			},
-			findRtoS: relaRepoFindRela{
-				out: &model.Relationship{
-					ReceiverID: 1,
-					SenderID:   2,
-					Status:     orm.StatusRBlockedS,
-				},
-				err: nil,
-			},
-			deleteStoR: relaRepoDeleteRela{
-				err: nil,
-			},
-			createRtoS: relaRepoCreateRela{
-				err: nil,
-			},
-			updateRtoS: relaRepoUpdateRela{
-				err: nil,
-			},
-			expErr: ErrAlreadyCreated,
-		},
-		"fail_s_blocked_r": {
-			getReq: userRepoGetUser{
-				out: model.User{
-					UserID:    1,
-					UserEmail: testConst.requestorEmail,
-				},
-				err: nil,
-			},
-			getTar: userRepoGetUser{
-				out: model.User{
-					UserID:    2,
-					UserEmail: testConst.targetEmail,
-				},
-				err: nil,
-			},
-			findStoR: relaRepoFindRela{
-				out: &model.Relationship{
-					ReceiverID: 2,
-					SenderID:   1,
-					Status:     orm.StatusRBlockedS,
-				},
-				err: nil,
-			},
-			findRtoS: relaRepoFindRela{
-				out: nil,
-				err: nil,
-			},
-			deleteStoR: relaRepoDeleteRela{
-				err: nil,
-			},
-			createRtoS: relaRepoCreateRela{
-				err: nil,
-			},
-			updateRtoS: relaRepoUpdateRela{
-				err: nil,
-			},
-			expErr: ErrBlocked,
-		},
 	} {
 		t.Run(s, func(t *testing.T) {
 			userRepo := user.NewMockRepository(t)
@@ -376,8 +548,11 @@ func TestImpl_Block(t *testing.T) {
 
 		execute:
 			err := relaCtrl.Block(context.Background(), testConst.requestorEmail, testConst.targetEmail)
-
-			require.ErrorIs(t, err, tc.expErr)
+			if tc.expErr != nil {
+				require.ErrorContains(t, err, tc.expErr.Error())
+			} else {
+				require.ErrorIs(t, err, tc.expErr)
+			}
 		})
 	}
 }

@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/hxcuber/friends-management/api/internal/controller/relationship"
-	"github.com/hxcuber/friends-management/api/internal/handler/response/basicSuccess"
-	"github.com/hxcuber/friends-management/api/internal/handler/response/errorWithString"
+	"github.com/hxcuber/friends-management/api/internal/handler/response/basic_success"
+	"github.com/hxcuber/friends-management/api/internal/handler/response/error_with_string"
 	"github.com/hxcuber/friends-management/api/internal/repository/user"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/mock"
@@ -121,12 +121,12 @@ func TestHandler_Block(t *testing.T) {
 
 			respBody, _ := io.ReadAll(w.Result().Body)
 			if !tc.expSuccess {
-				var response errorWithString.Response
+				var response error_with_string.Response
 				json.Unmarshal(respBody, &response)
 				require.False(t, response.Success)
 				require.Equal(t, tc.expErrorString, response.ErrMessage)
 			} else {
-				var response basicSuccess.Response
+				var response basic_success.Response
 				json.Unmarshal(respBody, &response)
 				require.True(t, response.Success)
 			}

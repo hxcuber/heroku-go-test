@@ -4,8 +4,8 @@ import (
 	"github.com/go-chi/render"
 	"github.com/hxcuber/friends-management/api/internal/controller/relationship"
 	"github.com/hxcuber/friends-management/api/internal/handler"
-	"github.com/hxcuber/friends-management/api/internal/handler/request/twoEmails"
-	"github.com/hxcuber/friends-management/api/internal/handler/response/basicSuccess"
+	"github.com/hxcuber/friends-management/api/internal/handler/request/two_emails"
+	"github.com/hxcuber/friends-management/api/internal/handler/response/basic_success"
 	"github.com/hxcuber/friends-management/api/internal/repository/user"
 	"github.com/pkg/errors"
 	"net/http"
@@ -13,7 +13,7 @@ import (
 
 func (h Handler) Befriend() http.HandlerFunc {
 	return handler.ErrorHandler(func(w http.ResponseWriter, r *http.Request) (error, int) {
-		var request twoEmails.Request
+		var request two_emails.Request
 
 		if err := render.Bind(r, &request); err != nil {
 			return err, http.StatusBadRequest
@@ -30,7 +30,7 @@ func (h Handler) Befriend() http.HandlerFunc {
 			return errors.New("Something went wrong"), http.StatusInternalServerError
 		}
 
-		if err = render.Render(w, r, basicSuccess.New(http.StatusCreated)); err != nil {
+		if err = render.Render(w, r, basic_success.New(http.StatusCreated)); err != nil {
 			return errors.New("Something went wrong"), http.StatusInternalServerError
 		}
 

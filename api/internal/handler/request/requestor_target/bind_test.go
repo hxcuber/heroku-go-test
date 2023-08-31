@@ -1,4 +1,4 @@
-package requestorTarget
+package requestor_target
 
 import (
 	"github.com/pkg/errors"

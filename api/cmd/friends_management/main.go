@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/hxcuber/friends-management/api/cmd/router"
-	"github.com/hxcuber/friends-management/api/internal/config"
 	relationshipController "github.com/hxcuber/friends-management/api/internal/controller/relationship"
 	systemController "github.com/hxcuber/friends-management/api/internal/controller/system"
 	userController "github.com/hxcuber/friends-management/api/internal/controller/user"
@@ -47,11 +46,6 @@ func main() {
 func run(ctx context.Context) error {
 	log.Println("Starting app initialization")
 
-	config, err := config.LoadConfig()
-	if err != nil {
-		log.Fatal("cannot load config:", err)
-	}
-
 	dbOpenConns, err := strconv.Atoi(env.GetAndValidateF("DB_POOL_MAX_OPEN_CONNS"))
 	if err != nil {
 		return errors.WithStack(fmt.Errorf("invalid db pool max open conns: %w", err))
@@ -61,7 +55,7 @@ func run(ctx context.Context) error {
 		return errors.WithStack(fmt.Errorf("invalid db pool max idle conns: %w", err))
 	}
 
-	conn, err := pg.NewPool(config.DBSource, dbOpenConns, dbIdleConns)
+	conn, err := pg.NewPool(env.GetAndValidateF("DB_URL"), dbOpenConns, dbIdleConns)
 
 	if err != nil {
 		return err

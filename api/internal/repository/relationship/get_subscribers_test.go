@@ -25,8 +25,8 @@ func TestImpl_GetSubscribers(t *testing.T) {
 		friendCount     int
 		expErr          error
 	}
-	os.Setenv("DB_URL", fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		host, port, username, password, dbname))
+
+	os.Setenv("DB_URL", "postgres://friends_management:@pg:5432/friends_management?sslmode=disable")
 	for s, tc := range map[string]test{
 		"empty": {
 			subscribedCount: 0,

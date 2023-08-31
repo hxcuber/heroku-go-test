@@ -1,7 +1,7 @@
 # One file to rule to them all
 
 ifndef PROJECT_NAME
-PROJECT_NAME := friends
+PROJECT_NAME := friends_management
 endif
 
 ifndef PRODUCTION_ENVIRONMENT:
@@ -42,7 +42,7 @@ endif
 api-test:
 	@${API_COMPOSE} sh -c "go test -mod=vendor -coverprofile=c.out -failfast -timeout 5m ./..."
 api-run:
-	@${API_COMPOSE} sh -c "go run -mod=vendor cmd/friends_management/*.go"
+	@${API_COMPOSE} sh -c "go run -mod=vendor cmd/${PROJECT_NAME}/*.go"
 api-build-binaries:
 	@${API_COMPOSE} sh -c "\
 		go clean -mod=vendor -i -x -cache ./... && \

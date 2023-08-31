@@ -2,7 +2,6 @@ package relationship
 
 import (
 	"context"
-	"fmt"
 	"github.com/hxcuber/friends-management/api/internal/controller/model"
 	"github.com/hxcuber/friends-management/api/internal/repository/orm"
 	"github.com/hxcuber/friends-management/api/pkg/db/pg"
@@ -27,8 +26,8 @@ func TestImpl_UpdateRelationship(t *testing.T) {
 		statusAfter  string
 		expErr       error
 	}
-	os.Setenv("DB_URL", fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		host, port, username, password, dbname))
+
+	os.Setenv("DB_URL", "postgres://friends_management:@pg:5432/friends_management?sslmode=disable")
 	for s, tc := range map[string]test{
 		"success": {
 			statusBefore: orm.StatusFriends,

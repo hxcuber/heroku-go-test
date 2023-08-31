@@ -1,0 +1,12 @@
+# Refer to https://github.com/volatiletech/sqlboiler#configuration
+output = "./internal/repository/orm"
+pkgname = "orm"
+no-tests = true
+[psql]
+dbname = "friends_management"
+host = "pg"
+port = 5432
+user = "friends_management"
+pass = ""
+sslmode = "disable"
+blacklist = "schema_migrations"

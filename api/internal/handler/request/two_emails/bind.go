@@ -1,4 +1,4 @@
-package twoEmails
+package two_emails
 
 import (
 	"github.com/hxcuber/friends-management/api/internal/handler/request"

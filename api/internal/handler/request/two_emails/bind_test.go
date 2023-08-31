@@ -1,4 +1,4 @@
-package twoEmails
+package two_emails
 
 import (
 	"errors"

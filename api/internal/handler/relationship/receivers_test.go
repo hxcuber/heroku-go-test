@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/hxcuber/friends-management/api/internal/controller/relationship"
-	"github.com/hxcuber/friends-management/api/internal/handler/response/errorWithString"
+	"github.com/hxcuber/friends-management/api/internal/handler/response/error_with_string"
 	"github.com/hxcuber/friends-management/api/internal/handler/response/recipients"
 	"github.com/hxcuber/friends-management/api/internal/repository/user"
 	"github.com/pkg/errors"
@@ -143,7 +143,7 @@ func TestHandler_Receivers(t *testing.T) {
 
 			respBody, _ := io.ReadAll(w.Result().Body)
 			if !tc.expSuccess {
-				var response errorWithString.Response
+				var response error_with_string.Response
 				json.Unmarshal(respBody, &response)
 				require.False(t, response.Success)
 				require.Equal(t, tc.expErrorString, response.ErrMessage)

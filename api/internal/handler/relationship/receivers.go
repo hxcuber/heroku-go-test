@@ -3,7 +3,7 @@ package relationship
 import (
 	"github.com/go-chi/render"
 	"github.com/hxcuber/friends-management/api/internal/handler"
-	"github.com/hxcuber/friends-management/api/internal/handler/request/senderText"
+	"github.com/hxcuber/friends-management/api/internal/handler/request/sender_text"
 	"github.com/hxcuber/friends-management/api/internal/handler/response/recipients"
 	"github.com/hxcuber/friends-management/api/internal/repository/user"
 	"github.com/pkg/errors"
@@ -12,7 +12,7 @@ import (
 
 func (h Handler) Receivers() http.HandlerFunc {
 	return handler.ErrorHandler(func(w http.ResponseWriter, r *http.Request) (error, int) {
-		var request senderText.Request
+		var request sender_text.Request
 
 		if err := render.Bind(r, &request); err != nil {
 			return err, http.StatusBadRequest

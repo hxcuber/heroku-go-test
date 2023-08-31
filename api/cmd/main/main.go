@@ -4,27 +4,37 @@ import (
 	"context"
 	"fmt"
 	router2 "github.com/hxcuber/friends-management/api/cmd/router"
+	"github.com/hxcuber/friends-management/api/internal/config"
 	relationshipController "github.com/hxcuber/friends-management/api/internal/controller/relationship"
 	systemController "github.com/hxcuber/friends-management/api/internal/controller/system"
 	userController "github.com/hxcuber/friends-management/api/internal/controller/user"
 	"github.com/hxcuber/friends-management/api/internal/repository"
+	"github.com/hxcuber/friends-management/api/pkg/app"
 	"github.com/hxcuber/friends-management/api/pkg/db/pg"
+	"github.com/hxcuber/friends-management/api/pkg/env"
 	"github.com/hxcuber/friends-management/api/pkg/httpserv"
+	"github.com/pkg/errors"
 	"log"
 	"os"
+	"strconv"
 	"strings"
-)
-
-const (
-	host     = "localhost"
-	port     = 5432
-	username = "hxcuber"
-	password = "hxcuber"
-	dbname   = "friends"
 )
 
 func main() {
 	ctx := context.Background()
+
+	appCfg := app.Config{
+		ProjectName:      env.GetAndValidateF("PROJECT_NAME"),
+		AppName:          env.GetAndValidateF("APP_NAME"),
+		SubComponentName: env.GetAndValidateF("PROJECT_COMPONENT"),
+		Env:              app.Env(env.GetAndValidateF("APP_ENV")),
+		Version:          env.GetAndValidateF("APP_VERSION"),
+		Server:           env.GetAndValidateF("SERVER_NAME"),
+		ProjectTeam:      os.Getenv("PROJECT_TEAM"),
+	}
+	if err := appCfg.IsValid(); err != nil {
+		log.Fatal(err)
+	}
 
 	if err := run(ctx); err != nil {
 		log.Fatal(err)
@@ -36,11 +46,21 @@ func main() {
 func run(ctx context.Context) error {
 	log.Println("Starting app initialization")
 
-	dbOpenConns := 4
-	dbIdleConns := 2
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		host, port, username, password, dbname)
-	conn, err := pg.NewPool(psqlInfo, dbOpenConns, dbIdleConns)
+	config, err := config.LoadConfig()
+	if err != nil {
+		log.Fatal("cannot load config:", err)
+	}
+
+	dbOpenConns, err := strconv.Atoi(env.GetAndValidateF("DB_POOL_MAX_OPEN_CONNS"))
+	if err != nil {
+		return errors.WithStack(fmt.Errorf("invalid db pool max open conns: %w", err))
+	}
+	dbIdleConns, err := strconv.Atoi(env.GetAndValidateF("DB_POOL_MAX_IDLE_CONNS"))
+	if err != nil {
+		return errors.WithStack(fmt.Errorf("invalid db pool max idle conns: %w", err))
+	}
+
+	conn, err := pg.NewPool(config.DBSource, dbOpenConns, dbIdleConns)
 	if err != nil {
 		return err
 	}
@@ -51,13 +71,7 @@ func run(ctx context.Context) error {
 
 	log.Println("App initialization completed")
 
-	// err = httpserv.NewServer(rtr.Handler()).Start(ctx)
-	// Using TempHandler for now to test flow, will refactor once I know
-	// where the routing is meant to go
-	err = httpserv.NewServer(rtr.Handler()).Start(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
+	httpserv.NewServer(rtr.Handler()).Start(ctx)
 
 	return nil
 }

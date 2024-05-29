@@ -3,7 +3,6 @@ package relationship
 import (
 	"context"
 	"fmt"
-	"github.com/cenkalti/backoff/v4"
 	"github.com/hxcuber/friends-management/api/internal/controller/model"
 	"github.com/hxcuber/friends-management/api/internal/repository"
 	"github.com/hxcuber/friends-management/api/internal/repository/relationship"
@@ -173,11 +172,6 @@ func TestImpl_Receivers(t *testing.T) {
 			relaRepo := relationship.NewMockRepository(t)
 			registry := repository.NewMockRegistry(t)
 			relaCtrl := New(registry)
-
-			registry.On("DoInTx", mock.Anything, mock.Anything, nil).Return(
-				func(ctx context.Context, txFunc func(ctx context.Context, txRepo repository.Registry) error, policy backoff.BackOff) error {
-					return txFunc(ctx, registry)
-				})
 
 			var expOut []string
 			userRepo.On("GetUserByEmail", mock.Anything, testConst.senderEmail).Return(

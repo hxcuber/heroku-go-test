@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/hxcuber/friends-management/api/internal/controller"
 	"github.com/hxcuber/friends-management/api/internal/controller/model"
-	"github.com/hxcuber/friends-management/api/internal/repository"
 	"github.com/hxcuber/friends-management/api/pkg/util"
 	"log"
 	"strings"
@@ -23,26 +22,24 @@ func (i impl) Receivers(ctx context.Context, senderEmail string, text string) ([
 
 	var validUsersMentioned model.Users
 	var subscribers model.Users
-	err := i.repo.DoInTx(context.Background(), func(ctx context.Context, txRepo repository.Registry) error {
-		sender, err := txRepo.User().GetUserByEmail(ctx, senderEmail)
-		if err != nil {
-			log.Printf(controller.LogErrMessage("Receivers", "retrieving sender by email %s", err, senderEmail))
-			return err
-		}
 
-		subscribers, err = txRepo.Relationship().GetSubscribers(ctx, sender)
-		if err != nil {
-			log.Printf(controller.LogErrMessage("Receivers", "retrieving sender subscribers", err))
-			return err
-		}
+	sender, err := i.repo.User().GetUserByEmail(ctx, senderEmail)
+	if err != nil {
+		log.Printf(controller.LogErrMessage("Receivers", "retrieving sender by email %s", err, senderEmail))
+		return nil, err
+	}
 
-		validUsersMentioned, err = txRepo.Relationship().GetReceiversFromEmails(ctx, sender, emailList)
-		if err != nil {
-			log.Printf(controller.LogErrMessage("Receivers", "retrieving sender receivers from email list", err))
-			return err
-		}
-		return nil
-	}, nil)
+	subscribers, err = i.repo.Relationship().GetSubscribers(ctx, sender)
+	if err != nil {
+		log.Printf(controller.LogErrMessage("Receivers", "retrieving sender subscribers", err))
+		return nil, err
+	}
+
+	validUsersMentioned, err = i.repo.Relationship().GetReceiversFromEmails(ctx, sender, emailList)
+	if err != nil {
+		log.Printf(controller.LogErrMessage("Receivers", "retrieving sender receivers from email list", err))
+		return nil, err
+	}
 	if err != nil {
 		log.Printf(controller.LogErrMessage("Receivers", "doing in transaction", err))
 		return nil, err

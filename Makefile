@@ -13,7 +13,7 @@ DOCKER_BIN := docker
 endif
 
 ifndef DOCKER_COMPOSE_BIN:
-DOCKER_COMPOSE_BIN := docker-compose
+DOCKER_COMPOSE_BIN := docker compose
 endif
 
 build-local-go-image:

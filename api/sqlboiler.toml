@@ -3,10 +3,10 @@ output = "./internal/repository/orm"
 pkgname = "orm"
 no-tests = true
 [psql]
-dbname = "friends_management"
+dbname = "heroku-go-test"
 host = "pg"
 port = 5432
-user = "friends_management"
+user = "heroku-go-test"
 pass = ""
 sslmode = "disable"
 blacklist = "schema_migrations"

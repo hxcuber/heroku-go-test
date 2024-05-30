@@ -10,7 +10,7 @@ import (
 )
 
 func TestFriendsDB(t *testing.T) {
-	pool, err := sql.Open("postgres", env.GetAndValidateF("DB_URL"))
+	pool, err := sql.Open("postgres", env.GetAndValidateF("DATABASE_URL"))
 	require.NoError(t, err)
 
 	db := &friendsDB{DB: pool}

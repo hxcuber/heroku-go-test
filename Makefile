@@ -1,7 +1,7 @@
 # One file to rule to them all
 
 ifndef PROJECT_NAME
-PROJECT_NAME := friends_management
+PROJECT_NAME := heroku-go-test
 endif
 
 ifndef PRODUCTION_ENVIRONMENT:
@@ -16,9 +16,25 @@ ifndef DOCKER_COMPOSE_BIN:
 DOCKER_COMPOSE_BIN := docker compose
 endif
 
+HEROKU_APP_NAME := heroku-go-test
+
 build-local-go-image:
 	${DOCKER_BIN} build -f build/local.go.Dockerfile -t ${PROJECT_NAME}-go-local:latest .
 	-${${DOCKER_BIN} images -f "dangling=true" -q}
+
+build-heroku-go-image:
+	${DOCKER_BIN} build --platform linux/amd64 -f build/heroku.go.Dockerfile -t ${PROJECT_NAME}-go-heroku:latest .
+	-${${DOCKER_BIN} images -f "dangling=true" -q}
+
+deploy-heroku: build-heroku-go-image
+	docker tag ${PROJECT_NAME}-go-heroku:latest registry.heroku.com/${HEROKU_APP_NAME}/web
+	docker push registry.heroku.com/${HEROKU_APP_NAME}/web
+	heroku container:release web -a ${HEROKU_APP_NAME}
+	heroku ps:scale web=1 -a ${HEROKU_APP_NAME}
+
+run-sqlboiler:
+	# Run SQLBoiler to generate models
+	sqlboiler --wipe psql && GOFLAGS="-mod=vendor" goimports -w internal/repository/orm/*.go
 
 # ----------------------------
 # Project level Methods
@@ -46,11 +62,11 @@ api-run:
 api-build-binaries:
 	@${API_COMPOSE} sh -c "\
 		go clean -mod=vendor -i -x -cache ./... && \
-		go build -mod=vendor -v -a -i -o binaries/friends_management ./cmd/friends_management && \
+		go build -mod=vendor -v -a -i -o binaries/${PROJECT_NAME} ./cmd/${PROJECT_NAME} && \
 		go build -mod=vendor -v -a -i -o binaries/job ./cmd/job && \
 		go build -mod=vendor -v -a -i -o binaries/multipartitionconsumer ./cmd/multipartitionconsumer && \
 		go build -mod=vendor -v -a -i -o binaries/singlepartitionconsumer ./cmd/singlepartitionconsumer && \
-		go build -mod=vendor -v -a -i -o binaries/datagen ./cmd/datagen "
+		go build -mod=vendor -v -a -i -o binaries/datagen ./cmd/datagen"
 api-update-vendor:
 	@${API_COMPOSE} sh -c "go mod tidy -compat=1.18 && go mod vendor"
 api-gen-mocks:
@@ -83,7 +99,7 @@ volumes:
 	${COMPOSE} up -d alpine
 	${DOCKER_BIN} cp ${shell pwd}/api/. ${PROJECT_NAME}-alpine-$${CONTAINER_SUFFIX:-local}:/api
 	${DOCKER_BIN} cp ${shell pwd}/api/data/migrations/. ${PROJECT_NAME}-alpine-$${CONTAINER_SUFFIX:-local}:/api-migrations
-	${DOCKER_BIN} cp ${shell pwd}/web/. ${PROJECT_NAME}-alpine-$${CONTAINER_SUFFIX:-local}:/web
+	${DOCKER_BIN} cp ${shell pwd}/web/. ${PROJECT_NAME}-alpine-$${CONTAINER_${PROJECT_NAME}:/web
 
 COMPOSE := PROJECT_NAME=${PROJECT_NAME} ${DOCKER_COMPOSE_BIN} -f build/docker-compose.base.yaml
 ifdef CONTAINER_SUFFIX

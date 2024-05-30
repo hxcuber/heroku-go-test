@@ -55,7 +55,7 @@ func run(ctx context.Context) error {
 		return errors.WithStack(fmt.Errorf("invalid db pool max idle conns: %w", err))
 	}
 
-	conn, err := pg.NewPool(env.GetAndValidateF("DB_URL"), dbOpenConns, dbIdleConns)
+	conn, err := pg.NewPool(env.GetAndValidateF("DATABASE_URL"), dbOpenConns, dbIdleConns)
 
 	if err != nil {
 		return err

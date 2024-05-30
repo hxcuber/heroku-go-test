@@ -10,7 +10,7 @@ import (
 // The value are read by viper from the config file
 type Config struct {
 	DBDriver      string `mapstructure:"DB_DRIVER"`
-	DBSource      string `mapstructure:"DB_URL"`
+	DBSource      string `mapstructure:"DATABASE_URL"`
 	ServerAddress string `mapstructure:"SERVER_ADDRESS"`
 }
 
@@ -51,7 +51,7 @@ func LoadConfig() (Config, error) {
 	}
 
 	if config.DBSource == "" {
-		log.Fatal("Cannot load DB_URL from config file.")
+		log.Fatal("Cannot load DATABASE_URL from config file.")
 	}
 
 	return config, nil

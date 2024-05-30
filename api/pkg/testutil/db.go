@@ -20,7 +20,7 @@ var appDB *sql.DB
 func WithTxDB(t *testing.T, callback func(pg.BeginnerExecutor)) {
 	if appDB == nil {
 		var err error
-		appDB, err = sql.Open("postgres", env.GetAndValidateF("DB_URL"))
+		appDB, err = sql.Open("postgres", env.GetAndValidateF("DATABASE_URL"))
 		appDB.SetMaxOpenConns(50)
 		appDB.SetConnMaxLifetime(30 * time.Minute)
 		require.NoError(t, err)

@@ -24,7 +24,7 @@ func TestInitDBConn(t *testing.T) {
 		{
 			name: "OK",
 			in: input{
-				dbURL:    os.Getenv("DB_URL"),
+				dbURL:    os.Getenv("DATABASE_URL"),
 				poolSize: 10,
 				maxIdle:  1,
 			},

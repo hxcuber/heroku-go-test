@@ -3,6 +3,7 @@ package httpserv
 import (
 	"context"
 	"fmt"
+	"github.com/hxcuber/friends-management/api/pkg/env"
 	"github.com/pkg/errors"
 	"net/http"
 	"os"
@@ -21,7 +22,7 @@ type server struct {
 func NewServer(handler http.Handler) *server {
 	s := server{
 		srv: &http.Server{
-			Addr:         ":3000",
+			Addr:         ":" + env.GetAndValidateF("PORT"),
 			Handler:      handler,
 			ReadTimeout:  time.Minute,
 			WriteTimeout: time.Minute,
@@ -43,7 +44,7 @@ func (s *server) Start(ctx context.Context) error {
 		startupError <- s.srv.ListenAndServe()
 	}()
 
-	fmt.Fprintf(os.Stdout, "Running: http://localhost%s/\n", s.srv.Addr)
+	fmt.Fprintf(os.Stdout, "Running locally on: http://localhost%s/\n", s.srv.Addr)
 
 	// Blocking main and waiting for shutdown.
 	select {
